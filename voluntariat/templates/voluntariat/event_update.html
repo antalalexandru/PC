@@ -1,0 +1,17 @@
+{% extends "voluntariat/base_generic.html" %}
+
+{% block content %}
+    <br>
+    <br>
+    <br>
+ <header style="padding: 10px 16px; background: #555;color: #f1f1f1;  position: fixed;top: 0; width: 100%;">
+
+    <button >LOGOUT</button>
+ </header>
+<form enctype="multipart/form-data" method="POST"> {% csrf_token %}
+
+{{ form.as_p }}
+<input type="submit" value="update"/>
+</form>
+
+{% endblock %}
