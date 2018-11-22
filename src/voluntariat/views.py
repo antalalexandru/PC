@@ -1,22 +1,52 @@
+from django.contrib.auth import authenticate, logout, login
 from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from django.template import loader
 
+from voluntariat.models import User
 
-def login(request):
-    page_content = loader.get_template('login.html').render()
-    return globalTemplate(request, page_content)
+
+def login_view(request):
+    if request.method == 'POST':
+        # User.objects.create_user('antal', 'crgroot97@gmail.com', '1234', age=20)
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None:
+            login(request, user)
+            return render(request, 'board_index.html', {
+                'user': user
+            })
+        else:
+            return render(request, 'login.html', {
+                'message': 'Invalid credentials'
+            })
+    # No backend authenticated the credentials
+    return render(request, 'login.html', {})
+
+def signup(request):
+    if request.method == 'POST':
+        # User.objects.create_user('antal', 'crgroot97@gmail.com', '1234', age=20)
+        username = request.POST['username']
+        password = request.POST['password']
+        email = request.POST['email']
+        age = request.POST['age']
+
+        # TODO validations etc
+        try:
+            user = User.objects.create_user(username, email, password, age=age)
+            return HttpResponse('OK')
+        except Exception as why:
+            return HttpResponse("Not OK")
+
+
+    return render(request, 'signup.html', {})
 
 def index(request):
-    return globalTemplate(request, "Pagina principala")
+    return render(request, 'board_index.html', {
+        'user': request.user
+    })
 
-def globalTemplate(request, page_content):
-    template = loader.get_template('index.html')
-    context = {
-        'page_content': page_content,
-    }
-    return HttpResponse(template.render(context, request))
-    pass
-
+def logout_view(request):
+    logout(request)
+    return render(request, 'board_index.html', {})
