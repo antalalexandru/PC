@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, logout, login
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
 # Create your views here.
@@ -14,9 +14,7 @@ def login_view(request):
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user is not None:
             login(request, user)
-            return render(request, 'board_index.html', {
-                'user': user
-            })
+            return HttpResponseRedirect('/')
         else:
             return render(request, 'login.html', {
                 'message': 'Invalid credentials'
@@ -49,4 +47,4 @@ def index(request):
 
 def logout_view(request):
     logout(request)
-    return render(request, 'board_index.html', {})
+    return HttpResponseRedirect('/')
