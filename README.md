@@ -70,6 +70,8 @@ Trebuie neaparat sa aveti virtualenvironmentul activat.
 Acesta este linkul de download:
 https://www.enterprisedb.com/downloads/postgres-postgresql-downloads#windows
 
+Trebuie sa aveti python 3.6 instalat
+
 ```
 setx PATH "%PATH%;C:\Program Files\PostgreSQL\11\bin"
 
