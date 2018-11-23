@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'voluntariat',
-    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -78,8 +77,12 @@ WSGI_APPLICATION = 'PC.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'proiectcolectiv',
+        'USER': 'postgres',
+        'PASSWORD': 'parola',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 

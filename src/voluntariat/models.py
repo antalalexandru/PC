@@ -20,7 +20,7 @@ class User(AbstractUser):
     email = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
-    age = models.IntegerField()
+    age = models.IntegerField(default=18)
     personal_description = models.TextField()
 
     stripe_client_id = models.CharField(max_length=1000)
