@@ -20,10 +20,8 @@ Python and PostgreSQL Database.
 
 Nu punem pe git migrarile asa ca va trebui sa rulati urmatoarele 2 comenzi pentru a va crea baza de date:
 
-<<<<<<< HEAD
 =======
 ```
->>>>>>> 62873dffd8fe330e1849d1150cffc32629880cfb
 python manage.py makemigrations voluntariat
 
 python manage.py migrate
@@ -54,7 +52,7 @@ pytest --pdb --maxfail=cate_vrei
 daca nu vrei sa se opreaasca decat la un anumit numar de failuri.
 
 
-## shell_plus
+## Shell
 
 Am adaugat o librarie ca sa lucram mai usor cu shell-ul oferit de django.
 Folositi comanda asta, va importa toate modelele si tot ce aveti nevoie sa lucrati cu baza de date.
@@ -63,19 +61,17 @@ Folositi comanda asta, va importa toate modelele si tot ce aveti nevoie sa lucra
 python manage.py shell_plus
 ```
 
-<<<<<<< HEAD
 Am adaugat o librarie ca sa lucram mai usor cu shell-ul oferit de django.
 Folositi comanda asta, va importa toate modelele si tot ce aveti nevoie sa lucrati cu baza de date.
 
-```angular2html
-POSTGRES
-```
+## PostgreSQL
 
 Cand instalati postgres, alegeti parola "parola", rulati urmatoarele comenzi in linia de comanda DIN PYCHARM!
 Trebuie neaparat sa aveti virtualenvironmentul activat.
-Acesta este linkul de download: 
+Acesta este linkul de download:
 https://www.enterprisedb.com/downloads/postgres-postgresql-downloads#windows
 
+```
 setx PATH "%PATH%;C:\Program Files\PostgreSQL\11\bin"
 
 psql -U postgres #introduceti parola "parola"
@@ -83,7 +79,8 @@ psql -U postgres #introduceti parola "parola"
 CREATE DATABASE proiectcolectiv OWNER postgres;
 
 easy_install psycopg2.exe # .exe-ul este in rootul proiectului nostru
-=======
+```
+
 ## Deployment
 
 For now:
@@ -106,4 +103,3 @@ git push -u origin master
 * Denis Barnutiu
 * Dragos Teodor
 * Iulia Baraian
->>>>>>> 62873dffd8fe330e1849d1150cffc32629880cfb
