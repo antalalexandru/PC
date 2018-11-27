@@ -1,7 +1,7 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.urls import reverse
 
 
 from django.urls import reverse
@@ -10,7 +10,7 @@ from django.urls import reverse
 class Event(models.Model):
     organizer = models.ForeignKey('User', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    picture = models.ImageField(upload_to='event_pics/%Y/%m/%d',max_length=255)
+    picture = models.ImageField(upload_to='event_pics/%Y/%m/%d', max_length=255)
     location = models.CharField(max_length=100)
     description = models.TextField()
     benefits = models.TextField()
