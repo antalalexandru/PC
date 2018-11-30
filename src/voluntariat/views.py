@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.template import loader
 
-from voluntariat.forms import SignUpForm, LoginForm
+from voluntariat.forms import LoginForm, SignUpForm
 from voluntariat.models import User
 
 
