@@ -66,6 +66,8 @@ def test_add(client,event,db):
     assert (resp.status_code==302)
     resp1 = client.get(reverse('event'))
     assert len(resp1.context['my_event_list']) == 1
+    responseGet=client.get(reverse('create'),event)
+    assert responseGet.status_code==200
 
 def test_add_fail(client,db):
     username = "user1"
@@ -86,9 +88,13 @@ def test_delete(client,event,db):
     client.login(username=username, password=password)
     client.post(reverse('create'), event)
     assert (Event.objects.count()==1)
+    getResponse =client.get(reverse('event-delete', kwargs={'pk':2}))
+    assert getResponse.status_code==200
     resp=client.post(reverse('event-delete', kwargs={'pk':2}))
     assert (Event.objects.count() == 0)
     assert resp.status_code==302
+
+
 
 
 def test_delete_fail(client,event,db):
@@ -111,14 +117,21 @@ def test_update(client,event,event3,db):
     client.login(username=username, password=password)
     resp = client.post(reverse('create'), event)
     assert (Event.objects.filter(name='Denis').exists() == True)
-
+    responseGet = client.get(reverse('event-update', kwargs={'pk': 4}), event)
+    assert responseGet.status_code == 200
+    assert responseGet.status_code == 200
+    responseq = client.post(reverse('event-update', kwargs={'pk': 4}), {'picture':'bla'})
+    assert (responseq.status_code==200)
     respUpdated=client.post(reverse('event-update',kwargs={'pk': 4}),event3)
     assert (Event.objects.filter(name='Denis').exists() == False)
     assert (Event.objects.filter(name='Roland').exists() == True)
+    assert(respUpdated.status_code==302)
 
 
 
-def test_update_fail(client,event,event3,db):
+
+
+def test_update_wrongId(client,event,event3,db):
     username = "user1"
     password = "bar"
     User.objects.create_user(username=username, password=password)

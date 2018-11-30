@@ -7,14 +7,11 @@ from django.urls import reverse
 class EventListView(generic.ListView):
 
     model = Event
-    paginate_by = 6
+    paginate_by = 10
 
     def get_queryset(self):
         query = self.request.GET.get("search", None)
         set = Event.objects.all()
-        if query is not None:
-            set = set.filter(name__icontains=query) | set.filter(description__icontains=query) | set.filter(
-                benefits__icontains=query)
         return set
 
     context_object_name = 'my_event_list'
@@ -31,9 +28,6 @@ class MyEventListView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET.get("query", None)
         list = Event.objects.filter(organizer=self.request.user)
-        if query is not None:
-            list = list.filter(name__icontains=query) | list.filter(description__icontains=query) | list.filter(
-                benefits__icontains=query)
         return list
 
     context_object_name = 'my_event_list'
