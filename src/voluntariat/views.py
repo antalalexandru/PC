@@ -4,7 +4,6 @@ from django.views import generic
 from .forms import EventForm
 from django.urls import reverse
 
-
 class EventListView(generic.ListView):
 
     model = Event
