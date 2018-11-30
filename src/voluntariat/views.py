@@ -24,7 +24,7 @@ def login_view(request):
                 return render(request, 'login.html', {
                     'message': 'Invalid credentials',
                     'form': LoginForm()
-                })
+                }, status=400)
     else:
         form = LoginForm()
     return render(request, 'signup.html', {'form': form})
@@ -39,9 +39,10 @@ def signup(request):
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('voluntariat:index')
+        else:
+            return render(request, 'signup.html', {'form': SignUpForm()}, status=400)
     else:
-        form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+        return render(request, 'signup.html', {'form': SignUpForm()})
 
 def index(request):
     return render(request, 'board_index.html', {
