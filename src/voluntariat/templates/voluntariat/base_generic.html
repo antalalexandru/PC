@@ -17,8 +17,10 @@
         <ul class="sidebar-nav">
           <li><a href="{% url 'event' %}">Evenimente</a></li>
           <li><a href="">Contul meu</a></li>
-          <li><a href="{% url 'myevents' %}">Evenimentele mele</a></li>
-        <li><a href="{% url 'create'%}">Event Nou</a></li>
+            {% if request.user.is_authenticated %}
+                <li><a href="{% url 'myevents' %}">Evenimentele mele</a></li>
+                <li><a href="{% url 'create'%}">Event Nou</a></li>
+        {% endif %}
         </ul>
      {% endblock %}
       </div>

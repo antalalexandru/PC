@@ -8,7 +8,7 @@ from django.urls import reverse
 class EventListView(generic.ListView):
 
     model = Event
-    paginate_by = 10
+    paginate_by = 6
 
     def get_queryset(self):
         query = self.request.GET.get("search", None)
@@ -57,7 +57,6 @@ def eventCreateView(request):
             event.save()
             return redirect(reverse('event-detail', kwargs={'pk': event.pk}))
 
-
     else:
         form = EventForm()
 
@@ -71,9 +70,10 @@ def eventCreateView(request):
 def event_update_view(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
-        form = EventForm(request.POST, request.FILES)
+        form = EventForm(request.POST, request.FILES,instance=event)
         if form.is_valid():
             event = form.save(commit=False)
+
             event.organizer = request.user
             event.save()
             return redirect(reverse('event-detail', kwargs={'pk': event.pk}))
