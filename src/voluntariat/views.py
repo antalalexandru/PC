@@ -6,39 +6,42 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.template import loader
 
+from voluntariat.forms import SignUpForm, LoginForm
 from voluntariat.models import User
 
 
 def login_view(request):
     if request.method == 'POST':
-        # User.objects.create_user('antal', 'crgroot97@gmail.com', '1234', age=20)
-        user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user is not None:
-            login(request, user)
-            return redirect('voluntariat:index')
-        else:
-            return render(request, 'login.html', {
-                'message': 'Invalid credentials'
-            })
-    # No backend authenticated the credentials
-    return render(request, 'login.html', {})
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=raw_password)
+            if user is not None:
+                login(request, user)
+                return redirect('voluntariat:index')
+            else:
+                return render(request, 'login.html', {
+                    'message': 'Invalid credentials',
+                    'form': LoginForm()
+                })
+    else:
+        form = LoginForm()
+    return render(request, 'signup.html', {'form': form})
 
 def signup(request):
     if request.method == 'POST':
-        # User.objects.create_user('antal', 'crgroot97@gmail.com', '1234', age=20)
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
-        age = request.POST['age']
-
-        # TODO validations etc
-        try:
-            user = User.objects.create_user(username, email, password, age=age)
-            return HttpResponse('OK')
-        except Exception as why:
-            return HttpResponse("Not OK")
-
-    return render(request, 'signup.html', {})
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('voluntariat:index')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 
 def index(request):
     return render(request, 'board_index.html', {
