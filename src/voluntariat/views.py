@@ -1,7 +1,8 @@
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Event
 from django.views import generic
-from .forms import EventForm
+from .forms import EventForm, LoginForm, SignUpForm
 from django.urls import reverse
 
 class EventListView(generic.ListView):
@@ -102,7 +103,7 @@ def login_view(request):
             user = authenticate(username=username, password=raw_password)
             if user is not None:
                 login(request, user)
-                return redirect('voluntariat:index')
+                return redirect('event')
             else:
                 return render(request, 'login.html', {
                     'message': 'Invalid credentials',
@@ -121,7 +122,7 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('voluntariat:index')
+            return redirect('event')
         else:
             return render(request, 'signup.html', {'form': SignUpForm()}, status=400)
     else:
@@ -134,4 +135,4 @@ def index(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('voluntariat:event')
+    return redirect('event')
