@@ -1,13 +1,13 @@
 {% extends "voluntariat/base_generic.html" %}
 
 {% block content %}
-<header style="padding: 10px 16px; background: #555;color: #f1f1f1;  position: fixed;top: 0; width: 100%;">
+<!-- <header style="padding: 10px 16px; background: #555;color: #f1f1f1;  position: fixed;top: 0; width: 100%;">
     <form method="get" action="{% url 'myevents' %}" style="float:left;padding-right: 60px">
         <input type="text" name='query' placeholder="event"/>
         <input type="submit" value="Search">
     </form>
         <button >LOGOUT</button>
-</header>
+</header> -->
 <h1 style="color:red">My Events</h1>
   {% if my_event_list %}
   <ul style="list-style-type:none" class="list-group">

@@ -105,13 +105,13 @@ def login_view(request):
                 login(request, user)
                 return redirect('event')
             else:
-                return render(request, 'login.html', {
+                return render(request, 'voluntariat/login.html', {
                     'message': 'Invalid credentials',
                     'form': LoginForm()
                 }, status=400)
     else:
         form = LoginForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'voluntariat/signup.html', {'form': form})
 
 def signup(request):
     if request.method == 'POST':
@@ -124,14 +124,10 @@ def signup(request):
             login(request, user)
             return redirect('event')
         else:
-            return render(request, 'signup.html', {'form': SignUpForm()}, status=400)
+            return render(request, 'voluntariat/signup.html', {'form': SignUpForm()}, status=400)
     else:
-        return render(request, 'signup.html', {'form': SignUpForm()})
+        return render(request, 'voluntariat/signup.html', {'form': SignUpForm()})
 
-def index(request):
-    return render(request, 'board_index.html', {
-        'user': request.user
-    })
 
 def logout_view(request):
     logout(request)
