@@ -82,6 +82,12 @@ CREATE DATABASE proiectcolectiv OWNER postgres;
 easy_install psycopg2.exe # .exe-ul este in rootul proiectului nostru
 ```
 
+## Bootstrap
+
+```
+pip install django-crispy-forms
+```
+
 ## Deployment
 
 For now:
