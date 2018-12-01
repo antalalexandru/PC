@@ -7,7 +7,7 @@
     {% for event in my_event_list %}
       <li>
         <div>
-            <img src="{{ event.picture.url }}"/>
+            <img src="{{ event.picture.url }}" style="max-width: 100px;" />
             <a href="{{ event.get_absolute_url }}">{{ event.name }}</a> ({{event.description}})
             {% if event.organizer == request.user %}
                 <i>Eventul meu :D</i>
