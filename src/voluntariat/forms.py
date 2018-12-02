@@ -1,6 +1,18 @@
 from django import forms
-from .models import Event
-from django.contrib.admin import  widgets
+from django.contrib.auth.forms import UserCreationForm
+
+from voluntariat.models import User, Event
+
+
+class SignUpForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2',)
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='username', max_length=250)
+    password = forms.CharField(max_length=32, widget=forms.PasswordInput)
 
 
 class EventForm(forms.ModelForm):

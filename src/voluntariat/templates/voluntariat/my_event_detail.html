@@ -1,20 +1,14 @@
 {% extends "voluntariat/base_generic.html" %}
 
 {% block content %}
-    <header style="padding: 10px 16px; background: #555;color: #f1f1f1;  position: fixed;top: 0; width: 100%;">
-        <button >LOGOUT</button>
-    </header>
-    <br>
-    <br>
-    <br>
     <h1>Title: {{ event.name }}</h1>
     <img src="{{ event.picture.url }}"/>
 
   <p><strong>Summary:</strong> {{ event.description }}</p>
   <p><strong>Benefits:</strong> {{ event.benefits }}</p>
     {% if event.organizer == request.user %}
-        <a  href="{% url 'event-delete' event.id %}">Sterge</a>
-        <a href="{% url 'event-update' event.id %}">Editeaza</a>
+        <a  href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
+        <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
     {% endif %}
 
 

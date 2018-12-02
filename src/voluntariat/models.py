@@ -21,7 +21,7 @@ class Event(models.Model):
     send_bird_channel_url = models.CharField(max_length=100,default='default')
 
     def get_absolute_url(self):
-        return reverse('event-detail', args=[str(self.id)])
+        return reverse('voluntariat:event-detail', args=[str(self.id)])
 
 
 class User(AbstractUser):

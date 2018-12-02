@@ -1,29 +1,18 @@
 {% extends "voluntariat/base_generic.html" %}
 
 {% block content %}
-<header style="padding: 10px 16px; background: #555;color: #f1f1f1;  position: fixed;top: 0; width: 100%;">
-<form method="get" action="{% url 'event' %}" style="float:left;padding-right: 60px">
-    <input type="text" name="search" placeholder="event"/>
-    <input type="submit" value="Search">
-</form>
-    <button >LOGOUT</button>
-
-</header>
-    <br>
-    <br>
-    <br>
 <h1>Event List</h1>
   {% if my_event_list %}
   <ul class="list-group">
     {% for event in my_event_list %}
       <li>
         <div>
-            <img src="{{ event.picture.url }}"/>
+            <img src="{{ event.picture.url }}" style="max-width: 100px;" />
             <a href="{{ event.get_absolute_url }}">{{ event.name }}</a> ({{event.description}})
             {% if event.organizer == request.user %}
                 <i>Eventul meu :D</i>
-                <a  href="{% url 'event-delete' event.id %}">Sterge</a>
-                <a href="{% url 'event-update' event.id %}">Editeaza</a>
+                <a  href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
+                <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
             {% endif %}
         </div>
       </li>
