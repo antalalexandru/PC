@@ -110,8 +110,7 @@ def login_view(request):
                     'form': LoginForm()
                 }, status=400)
     else:
-        form = LoginForm()
-    return render(request, 'voluntariat/signup.html', {'form': form})
+        return render(request, 'voluntariat/login.html', {'form': LoginForm()})
 
 
 def signup(request):
