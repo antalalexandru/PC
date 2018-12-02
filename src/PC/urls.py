@@ -21,11 +21,6 @@ from PC import settings
 from voluntariat import views
 
 urlpatterns = [
-    path('event/',include('voluntariat.urls')),
+    path('', include('voluntariat.urls')),
     path('admin/', admin.site.urls),
-    path('login/', views.login_view, name='login'),
-    path('signup/', views.signup, name='signup'),
-    path('logout/', views.logout_view, name='logout'),
-
-
-]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

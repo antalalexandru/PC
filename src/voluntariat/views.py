@@ -5,8 +5,8 @@ from django.views import generic
 from .forms import EventForm, LoginForm, SignUpForm
 from django.urls import reverse
 
-class EventListView(generic.ListView):
 
+class EventListView(generic.ListView):
     model = Event
     paginate_by = 10
 
@@ -49,7 +49,7 @@ def eventCreateView(request):
             event = form.save(commit=False)
             event.organizer = request.user
             event.save()
-            return redirect(reverse('event-detail', kwargs={'pk': event.pk}))
+            return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
 
     else:
         form = EventForm()
@@ -70,7 +70,7 @@ def event_update_view(request, pk):
 
             event.organizer = request.user
             event.save()
-            return redirect(reverse('event-detail', kwargs={'pk': event.pk}))
+            return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
 
 
     else:
@@ -87,7 +87,7 @@ def event_delete_view(request, pk):
     obj = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
         obj.delete()
-        return redirect('../../')
+        return redirect(reverse('voluntariat:dashboard'))
     context = {
         "event": obj
     }
@@ -103,7 +103,7 @@ def login_view(request):
             user = authenticate(username=username, password=raw_password)
             if user is not None:
                 login(request, user)
-                return redirect('event')
+                return redirect('voluntariat:dashboard')
             else:
                 return render(request, 'voluntariat/login.html', {
                     'message': 'Invalid credentials',
@@ -112,6 +112,7 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'voluntariat/signup.html', {'form': form})
+
 
 def signup(request):
     if request.method == 'POST':
@@ -122,7 +123,7 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('event')
+            return redirect('voluntariat:dashboard')
         else:
             return render(request, 'voluntariat/signup.html', {'form': SignUpForm()}, status=400)
     else:
@@ -131,4 +132,4 @@ def signup(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('event')
+    return redirect('voluntariat:dashboard')

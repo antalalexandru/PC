@@ -7,8 +7,8 @@
   <p><strong>Summary:</strong> {{ event.description }}</p>
   <p><strong>Benefits:</strong> {{ event.benefits }}</p>
     {% if event.organizer == request.user %}
-        <a  href="{% url 'event-delete' event.id %}">Sterge</a>
-        <a href="{% url 'event-update' event.id %}">Editeaza</a>
+        <a  href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
+        <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
     {% endif %}
 
 

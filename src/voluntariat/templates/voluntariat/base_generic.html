@@ -23,19 +23,19 @@
                                 </a>
 						    </li>
                             <li class="nav-item active">
-                                <a class="nav-link" href="{% url 'logout' %}">
+                                <a class="nav-link" href="{% url 'voluntariat:logout' %}">
                                     <i class="fas fa-sign-out-alt"></i> Log out
                                 </a>
 						    </li>
 
                         {% else %}
                             <li class="nav-item active">
-                                <a class="nav-link" href="{% url 'login' %}">
+                                <a class="nav-link" href="{% url 'voluntariat:login' %}">
                                     <i class="fas fa-sign-in-alt"></i> Log in
                                 </a>
 						    </li>
                             <li class="nav-item active">
-                                <a class="nav-link" href="{% url 'signup' %}">
+                                <a class="nav-link" href="{% url 'voluntariat:signup' %}">
                                     <i class="fas fa-user-plus"></i> Sign up
                                 </a>
 						    </li>
@@ -49,14 +49,14 @@
 				<div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
 					<ul class="navbar-nav mr-auto">
 						<li class="nav-item active">
-							<a class="nav-link" href="{% url 'event' %}">Evenimente</a>
+							<a class="nav-link" href="{% url 'voluntariat:dashboard' %}">Evenimente</a>
 						</li>
                         {% if request.user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'myevents' %}">Evenimentele mele</a>
+                                <a class="nav-link" href="{% url 'voluntariat:myevents' %}">Evenimentele mele</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'create'%}">Adaugă eveniment</a>
+                                <a class="nav-link" href="{% url 'voluntariat:create'%}">Adaugă eveniment</a>
                             </li>
                         {% endif %}
 					</ul>
