@@ -109,8 +109,8 @@ def login_view(request):
                     'message': 'Invalid credentials',
                     'form': LoginForm()
                 }, status=400)
-    else:
-        return render(request, 'voluntariat/login.html', {'form': LoginForm()})
+
+    return render(request, 'voluntariat/login.html', {'form': LoginForm()})
 
 
 def signup(request):

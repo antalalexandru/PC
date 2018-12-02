@@ -99,8 +99,6 @@ def test_delete(client,event,db):
     assert resp.status_code==302
 
 
-
-
 def test_delete_fail(client,event,db):
     username = "user1"
     password = "bar"
