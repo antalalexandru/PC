@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Event
-from django.views import generic
-from .forms import EventForm, LoginForm, SignUpForm
 from django.urls import reverse
+from django.views import generic
+
+from .forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
+from .models import Event, User
 
 
 class EventListView(generic.ListView):
@@ -22,7 +23,6 @@ class EventListView(generic.ListView):
 
 
 class MyEventListView(generic.ListView):
-
     model = Event
     paginate_by = 10
 
@@ -42,7 +42,6 @@ class EventDetailView(generic.DetailView):
 
 
 def eventCreateView(request):
-
     if request.method == "POST":
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
@@ -64,10 +63,9 @@ def eventCreateView(request):
 def event_update_view(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
-        form = EventForm(request.POST, request.FILES,instance=event)
+        form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
             event = form.save(commit=False)
-
             event.organizer = request.user
             event.save()
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
@@ -111,6 +109,44 @@ def login_view(request):
                 }, status=400)
 
     return render(request, 'voluntariat/login.html', {'form': LoginForm()})
+
+
+def my_profile(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    context = {"user": user}
+    return render(request, 'voluntariat/myprofile.html', context)
+
+
+def my_profile_update(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == "POST":
+        form = UserForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.save()
+            return redirect(reverse('voluntariat:myprofile', kwargs={'pk': user.pk}))
+
+    else:
+        form = UserForm(instance=user)
+    return render(request, 'voluntariat/myprofile_update.html', {'form': form, 'user': user})
+
+
+def my_profile_change_password(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        old_password = request.POST.get("old_password")
+        if not user.check_password(old_password):
+            form.set_old_password_flag()
+        if form.is_valid():
+            new_password = form.clean().get('new_password')
+            user.set_password(new_password)
+            user.save()
+            return redirect(reverse('voluntariat:myprofile', kwargs={'pk': user.pk}))
+    else:
+        form = ChangePasswordForm()
+
+    return render(request, 'voluntariat/myprofile_change_password.html', {'form': form, 'user': user})
 
 
 def signup(request):
