@@ -1,0 +1,17 @@
+{% extends "voluntariat/base_generic.html" %}
+{% block content %}
+    <h1>Detalii utilizator</h1>
+
+    <ul>
+        <li>Nume: {{ user.last_name }}</li>
+        <li>Prenume: {{ user.first_name }}</li>
+        <li>Varsta: {{ user.age }}</li>
+        <li>Email: {{ user.email }}</li>
+        <li>Descriere: {{ user.personal_description }}</li>
+    </ul>
+    <br>
+
+    <a href="{% url 'voluntariat:myprofile-update' user.id %}" class="btn btn-primary">Editare profil</a>
+    <a href="{% url 'voluntariat:myprofile-change-password' user.id %}" class="btn btn-primary">Schimba parola</a>
+
+{% endblock %}
