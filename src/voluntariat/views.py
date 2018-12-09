@@ -132,3 +132,6 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
+
+def chat(request):
+    return render(request, 'voluntariat/chat/index.html')

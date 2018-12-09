@@ -14,4 +14,5 @@ urlpatterns = [
     path('event/<int:pk>/', views.EventDetailView.as_view(), name='event-detail'),
     path('event/<int:pk>/delete/', views.event_delete_view, name='event-delete'),
     path('event/<int:pk>/update/', views.event_update_view, name='event-update'),
+    path('chat/', views.chat, name='chat'),
 ]
