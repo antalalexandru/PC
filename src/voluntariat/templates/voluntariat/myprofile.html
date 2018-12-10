@@ -1,17 +1,31 @@
 {% extends "voluntariat/base_generic.html" %}
 {% block content %}
     <h1>Detalii utilizator</h1>
+    <br>
+    {% load staticfiles %}
+    <img src="{% static 'images/default-profile.jpg' %}" class="rounded float-left" alt="..." height="200" width="200"/>
+    <ul class="list-group list-group-flush">
 
-    <ul>
-        <li>Nume: {{ user.last_name }}</li>
-        <li>Prenume: {{ user.first_name }}</li>
-        <li>Varsta: {{ user.age }}</li>
-        <li>Email: {{ user.email }}</li>
-        <li>Descriere: {{ user.personal_description }}</li>
+        <li class="list-group-item"><strong>Nume: </strong>{{ user.last_name }}</li>
+        <li class="list-group-item"><strong>Prenume: </strong> {{ user.first_name }}</li>
+        <li class="list-group-item"><strong>Varsta: </strong> {{ user.age }}</li>
+        <li class="list-group-item"><strong>Email: </strong> {{ user.email }}</li>
+        <li class="list-group-item"><strong>Descriere: </strong> {{ user.personal_description }}</li>
+        <li class="list-group-item"><strong>Participari: </strong> {{ user.participations }}</li>
     </ul>
     <br>
 
-    <a href="{% url 'voluntariat:myprofile-update' %}" class="btn btn-primary">Editare profil</a>
-    <a href="{% url 'voluntariat:myprofile-change-password' %}" class="btn btn-primary">Schimba parola</a>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="{% url 'voluntariat:myprofile-update' %}"
+                   class="btn btn-primary  custom-button-width .navbar-right">Editare profil</a>
+                <a href="{% url 'voluntariat:myprofile-change-password' %}"
+                   class="btn btn-primary   custom-button-width .navbar-right">Schimba parola</a>
+            </div>
+        </div>
+    </div>
+
+
 
 {% endblock %}

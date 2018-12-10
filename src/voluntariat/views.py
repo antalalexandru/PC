@@ -142,7 +142,6 @@ def my_profile_change_password(request):
         if not user.check_password(old_password):
             form.set_old_password_flag()
         if form.is_valid():
-            print(form.cleaned_data)
             new_password = form.clean().get('new_password')
             user.set_password(new_password)
             user.save()

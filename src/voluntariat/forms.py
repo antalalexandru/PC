@@ -27,7 +27,7 @@ class EventForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'age', 'personal_description', 'participations']
+        fields = ['personal_description']
 
 
 class ChangePasswordForm(forms.Form):
@@ -47,19 +47,21 @@ class ChangePasswordForm(forms.Form):
     def clean(self):
         new_password = self.cleaned_data.get('new_password')
         repeat_password = self.cleaned_data.get('repeat_password')
-        current_password = self.cleaned_data.get('current_password')
+        old_password = self.cleaned_data.get('old_password')
         self.old_password_flag = False
 
         if new_password != repeat_password:
-            raise forms.ValidationError({'repeat_password': ['the new password and the repeat password must be the same']})
+            raise forms.ValidationError(
+                {'repeat_password': ['the new password and the repeat password must be the same']})
 
-        if new_password == current_password:
-            raise forms.ValidationError({'new_password': ['the new password must be different than the current password']})
+        if new_password == old_password:
+            raise forms.ValidationError(
+                {'new_password': ['the new password must be different than the current password']})
 
         return self.cleaned_data
 
     def clean_old_password(self, *args, **kwargs):
         old_password = self.cleaned_data.get('old_password')
-        if self.old_password_flag == False:
+        if not self.old_password_flag:
             raise forms.ValidationError("The old password that you have entered is wrong.")
         return old_password
