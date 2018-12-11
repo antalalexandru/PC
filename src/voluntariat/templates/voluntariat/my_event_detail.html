@@ -6,10 +6,16 @@
 
   <p><strong>Summary:</strong> {{ event.description }}</p>
   <p><strong>Benefits:</strong> {{ event.benefits }}</p>
+  <p><strong>Start Date:</strong> {{ event.start_date }}</p>
+  <p><strong>End date:</strong> {{ event.end_date }}</p>
     {% if event.organizer == request.user %}
         <a  href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
         <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
+
     {% endif %}
 
+    {% if request.can_attend %}
+      <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
+    {% endif %}
 
 {% endblock %}

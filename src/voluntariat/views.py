@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
+
+from voluntariat import models
 from .models import Event
 from django.views import generic
 from .forms import EventForm, LoginForm, SignUpForm
@@ -22,7 +24,6 @@ class EventListView(generic.ListView):
 
 
 class MyEventListView(generic.ListView):
-
     model = Event
     paginate_by = 10
 
@@ -40,9 +41,18 @@ class EventDetailView(generic.DetailView):
     model = Event
     template_name = "voluntariat/my_event_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(EventDetailView, self).get_context_data(**kwargs)
+
+        if len(models.Participantion.objects.filter(voluntar_id=self.request.user.id, event_id=self.kwargs['pk'])) == 0:
+            self.request.can_attend = True
+        else:
+            self.request.can_attend = False
+
+        return context
+
 
 def eventCreateView(request):
-
     if request.method == "POST":
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
@@ -64,7 +74,7 @@ def eventCreateView(request):
 def event_update_view(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
-        form = EventForm(request.POST, request.FILES,instance=event)
+        form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
             event = form.save(commit=False)
 
@@ -92,6 +102,19 @@ def event_delete_view(request, pk):
         "event": obj
     }
     return render(request, "voluntariat/delete.html", context)
+
+def event_attend_view(request, pk):
+    obj = get_object_or_404(Event, pk=pk)
+    if request.method == "POST":
+        user = models.User.objects.get(username=request.user.username)
+        participation = models.Participantion(voluntar=user, event=obj, rating=1, feedback='')
+        participation.save()
+        return redirect(reverse('voluntariat:dashboard'))
+
+    context = {
+        "event": obj
+    }
+    return render(request, "voluntariat/attend.html", context)
 
 
 def login_view(request):
