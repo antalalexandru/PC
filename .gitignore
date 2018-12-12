@@ -47,8 +47,8 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
-media/profile_images
-media/event_pics
+src/media/profile_images
+src/media/event_pics
 
 # Translations
 *.mo
