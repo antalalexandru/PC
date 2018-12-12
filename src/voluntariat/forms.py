@@ -23,6 +23,7 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date')
 
+
 class UserForm(forms.ModelForm):
     picture = forms.ImageField(label='Fotografia de  profil', required=False,
                                error_messages={'invalid': "Image files only"}, widget=forms.FileInput)
