@@ -121,7 +121,7 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'voluntariat.User'
 
-MEDIA_ROOT = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 

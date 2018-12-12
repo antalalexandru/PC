@@ -1,6 +1,6 @@
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from voluntariat.forms import ChangePasswordForm
 from voluntariat.models import User
 
 
@@ -20,7 +20,6 @@ def test_myProfile(user, client):
     assert client.get('/myprofile/update/').status_code == 200
     assert client.get('/myprofile/changePassword/').status_code == 200
     client.logout()
-
 
 
 def test_validForm(user, client):
@@ -82,10 +81,34 @@ def test_ModifyDescription(user, client):
     client.logout()
     user.delete()
 
+
 def test_ModifyEmptyDescription(user, client):
     client.force_login(user)
-    resp = client.post('/myprofile/update/', data={'personal_description': ''})
+    resp = client.post('/myprofile/update/', data={'picture': '', 'personal_description': ''})
 
+    assert resp.status_code == 302
+    client.logout()
+    user.delete()
+
+
+def test_ModifyProfileImage(user, client):
+    small_gif = (
+        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+        b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+        b'\x02\x4c\x01\x00\x3b'
+    )
+    uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
+    client.force_login(user)
+    resp = client.post('/myprofile/update/', data={'picture': uploaded, 'personal_description': ''})
+    user = User.objects.get(id=user.id)
+    assert resp.status_code == 302
+    client.logout()
+    user.delete()
+
+
+def test_failModifyProfileImage(user, client):
+    client.force_login(user)
+    resp = client.post('/myprofile/update/', data={'picture': '', 'personal_description': 'sugi'})
     assert resp.status_code == 200
     client.logout()
     user.delete()

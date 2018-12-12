@@ -2,16 +2,24 @@
 {% block content %}
     <h1>Detalii utilizator</h1>
     <br>
-    {% load staticfiles %}
-    <img src="{% static 'images/default-profile.jpg' %}" class="rounded float-left" alt="..." height="200" width="200"/>
+    <img src="{{ user.picture.url }}" class="rounded float-left" alt="..." height="200" width="200"/>
     <ul class="list-group list-group-flush">
-
         <li class="list-group-item"><strong>Nume: </strong>{{ user.last_name }}</li>
         <li class="list-group-item"><strong>Prenume: </strong> {{ user.first_name }}</li>
         <li class="list-group-item"><strong>Varsta: </strong> {{ user.age }}</li>
         <li class="list-group-item"><strong>Email: </strong> {{ user.email }}</li>
         <li class="list-group-item"><strong>Descriere: </strong> {{ user.personal_description }}</li>
-        <li class="list-group-item"><strong>Participari: </strong> {{ user.participations }}</li>
+        {% if user.participations != null %}
+
+            <li class="list-group-item"><strong>Participari: </strong>
+                {% for participation in user.participations.items %}
+                    {{ participation.event }}, {{ participation.rating }}<br>
+                {% endfor %}
+            </li>
+
+        {% else %}
+            <li class="list-group-item"><strong>Participari: </strong></li>
+        {% endif %}
     </ul>
     <br>
 
@@ -25,7 +33,5 @@
             </div>
         </div>
     </div>
-
-
 
 {% endblock %}
