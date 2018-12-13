@@ -1,9 +1,13 @@
+from django.contrib.admin.templatetags.admin_list import pagination
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Event
+from .models import Event, User
 from django.views import generic
 from .forms import EventForm, LoginForm, SignUpForm
 from django.urls import reverse
+from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 class EventListView(generic.ListView):
@@ -22,7 +26,6 @@ class EventListView(generic.ListView):
 
 
 class MyEventListView(generic.ListView):
-
     model = Event
     paginate_by = 10
 
@@ -42,7 +45,6 @@ class EventDetailView(generic.DetailView):
 
 
 def eventCreateView(request):
-
     if request.method == "POST":
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
@@ -64,7 +66,7 @@ def eventCreateView(request):
 def event_update_view(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
-        form = EventForm(request.POST, request.FILES,instance=event)
+        form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
             event = form.save(commit=False)
 
@@ -132,3 +134,32 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
+
+
+def volunteers_list(request, q=None):
+    user_list = User.objects.all()
+
+    query = q or request.GET.get('q')
+    if query:
+        user_list = user_list.filter(
+            Q(last_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(username__icontains=query)
+        ).distinct()
+
+    paginator = Paginator(user_list, 5)
+
+    page = request.GET.get('page')
+    users = paginator.get_page(page)
+
+    return render(request, 'voluntariat/volunteerslist.html', context={'users': users, 'q': query})
+
+
+def volunteer_send_email(request, pk):
+    obj = User.objects.get(pk=pk)
+    if request.method == "POST":
+        email = EmailMessage('Invitatie', 'Invitatie pentru urmatorul eveniment: linkattend', to=[obj.email])
+        email.send()
+        return redirect(reverse('voluntariat:volunteers'))
+    context = {"user": obj}
+    return render(request, "voluntariat/send_em.html", context)
