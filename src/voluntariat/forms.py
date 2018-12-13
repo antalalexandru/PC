@@ -21,7 +21,7 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date')
+        fields = ('name', 'picture', 'location', 'description', 'benefits', 'accumulated_donation', 'requested_donation', 'start_date', 'end_date')
 
 
 class UserForm(forms.ModelForm):
@@ -75,3 +75,5 @@ class ChangePasswordForm(forms.Form):
         if not self.old_password_flag:
             raise forms.ValidationError("Parola veche pe care ai introdus-o este gresita.")
         return old_password
+
+        fields = ('name', 'picture', 'location', 'description', 'benefits', 'requested_donation', 'start_date', 'end_date')

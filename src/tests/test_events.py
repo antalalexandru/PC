@@ -21,7 +21,7 @@ def event(request, db):
     date = datetime.now()
 
     data = {'name': 'Denis', 'picture': uploaded, 'location': 'Cluj'
-        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date}
+        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date, 'accumulated_donation': 0, 'requested_donation': 0}
 
     return data
 
@@ -37,7 +37,7 @@ def event2(request, db):
     date = datetime.now()
 
     data = {'name': 'Bla', 'picture': uploaded, 'location': 'Cluj'
-        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date}
+        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date, 'accumulated_donation': 0, 'requested_donation': 0}
 
     return data
 
@@ -53,7 +53,7 @@ def event3(request, db):
     date = datetime.now()
 
     data = {'name': 'Roland', 'picture': uploaded, 'location': 'Cluj'
-        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date}
+        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date, 'accumulated_donation': 0, 'requested_donation': 0}
 
     return data
 

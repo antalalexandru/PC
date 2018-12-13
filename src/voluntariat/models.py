@@ -1,8 +1,5 @@
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-
 from django.urls import reverse
 
 
@@ -14,6 +11,10 @@ class Event(models.Model):
     description = models.TextField()
     benefits = models.TextField()
 
+    requested_donation = models.PositiveIntegerField(default=0)
+    accumulated_donation = models.PositiveIntegerField(default=0)
+
+
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
@@ -21,7 +22,6 @@ class Event(models.Model):
 
     def get_absolute_url(self):
         return reverse('voluntariat:event-detail', args=[str(self.id)])
-
 
 class User(AbstractUser):
     email = models.CharField(max_length=100)

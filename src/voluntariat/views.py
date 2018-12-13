@@ -41,6 +41,17 @@ class EventDetailView(generic.DetailView):
     model = Event
     template_name = "voluntariat/my_event_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event = self.object
+        donation_percentage = event.accumulated_donation / event.requested_donation
+        if donation_percentage >= 1:
+            donation_percentage = 100
+        else:
+            donation_percentage *= 100
+        self.request.donation_percentage = donation_percentage
+        return context
+
 
 def eventCreateView(request):
     if request.method == "POST":
@@ -169,7 +180,7 @@ def signup(request):
     else:
         return render(request, 'voluntariat/signup.html', {'form': SignUpForm()})
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
