@@ -4,10 +4,16 @@
 <div>
     <form class="navbar-form navbar-left" role="search" method="get" action="{% url 'voluntariat:volunteers'%}">
         <div class="form-group">
-            <input type="text" class="form-control" name="q" value="{{ request.GET.q }}"
-                   placeholder="Introduce text....">
+            <div class="row">
+                <div class="col-10">
+                    <input type="text" class="form-control" name="q" value="{{ request.GET.q }}"
+                           placeholder="Introduce text....">
+                </div>
+                <div class="col=2">
+                    <button type="submit" class="btn btn-info">Search</button>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-info">Search</button>
     </form>
 </div>
 {% if users %}
