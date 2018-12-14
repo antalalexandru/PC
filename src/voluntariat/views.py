@@ -147,7 +147,7 @@ def volunteers_list(request, q=None):
             Q(username__icontains=query)
         ).distinct()
 
-    paginator = Paginator(user_list, 5)
+    paginator = Paginator(user_list, 2)
 
     page = request.GET.get('page')
     users = paginator.get_page(page)
