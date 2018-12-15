@@ -134,4 +134,4 @@ def logout_view(request):
     return redirect('voluntariat:dashboard')
 
 def chat(request):
-    return render(request, 'voluntariat/chat/index.html')
+    return render(request, 'voluntariat/chat/chat.html')
