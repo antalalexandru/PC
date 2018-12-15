@@ -1,7 +1,6 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.urls import reverse
 
 
 from django.urls import reverse
@@ -30,6 +29,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=100)
     age = models.IntegerField(default=30)
     personal_description = models.TextField()
+    picture = models.ImageField(upload_to='profile_images', default='git_images/default-profile.jpg', max_length=255)
 
     stripe_client_id = models.CharField(max_length=1000)
     stripe_customer_id = models.CharField(max_length=1000)
