@@ -135,3 +135,6 @@ def logout_view(request):
 
 def chat(request):
     return render(request, 'voluntariat/chat/chat.html')
+
+def chat_index(request):
+    return render(request, 'voluntariat/chat/index.html')

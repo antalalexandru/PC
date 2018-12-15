@@ -15,4 +15,5 @@ urlpatterns = [
     path('event/<int:pk>/delete/', views.event_delete_view, name='event-delete'),
     path('event/<int:pk>/update/', views.event_update_view, name='event-update'),
     path('chat/', views.chat, name='chat'),
+    path('chat/index.html', views.chat_index, name='chat_index'),
 ]
