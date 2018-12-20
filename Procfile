@@ -1,1 +1,1 @@
-web: gunicorn src.PC.wsgi --workers 1 --log-file -
+web: cd src && gunicorn src.PC.wsgi --workers 1 --log-file -
