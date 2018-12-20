@@ -49,6 +49,7 @@ coverage.xml
 .pytest_cache/
 src/media/profile_images
 src/media/event_pics
+src/static/
 
 # Translations
 *.mo
