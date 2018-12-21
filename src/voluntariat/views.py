@@ -164,10 +164,10 @@ def signup(request):
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('voluntariat:dashboard')
-        else:
-            return render(request, 'voluntariat/signup.html', {'form': SignUpForm()}, status=400)
     else:
-        return render(request, 'voluntariat/signup.html', {'form': SignUpForm()})
+        form = SignUpForm()
+
+    return render(request, 'voluntariat/signup.html', {'form': form})
 
 
 def logout_view(request):

@@ -24,7 +24,7 @@ class Event(models.Model):
 
 
 class User(AbstractUser):
-    email = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
     last_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     age = models.IntegerField(default=30)
