@@ -3,6 +3,9 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
+import django_heroku
+import dj_database_url
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -70,14 +73,7 @@ WSGI_APPLICATION = 'PC.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'proiectcolectiv',
-        'USER': 'postgres',
-        'PASSWORD': 'parola',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True),
 }
 
 
@@ -118,6 +114,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_MODEL = 'voluntariat.User'
 
@@ -126,3 +123,5 @@ MEDIA_URL = '/media/'
 
 
 LOGIN_URL = '/login/'
+
+django_heroku.settings(locals())
