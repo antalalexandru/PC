@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import generic
+import requests
 
 from .forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
 from .models import Event, User
@@ -173,3 +174,18 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
+
+def chat(request):
+    user_id = request.GET.get("userid")
+    event_id = request.GET.get("eventid")
+
+    api_headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+    data = {
+
+    }
+    res = requests.post('https://api.sendbird.com/v3/group_channels', headers=api_headers, data=data)
+
+    return render(request, 'voluntariat/chat/chat.html')
+
+def chat_index(request):
+    return render(request, 'voluntariat/chat/index.html')
