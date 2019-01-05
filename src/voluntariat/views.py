@@ -43,11 +43,17 @@ class EventDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
-
-        if len(models.Participantion.objects.filter(voluntar_id=self.request.user.id, event_id=self.kwargs['pk'])) == 0:
-            self.request.can_attend = True
+        if self.request.user.id is None:
+            self.request.can_attend = 2
+        elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
+                                                    event_id=self.kwargs['pk'])) == 0 and len(
+            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0:
+            self.request.can_attend = 1
         else:
-            self.request.can_attend = False
+            # len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
+            #                                           event_id=self.kwargs['pk'])) != 0 and len(
+            # models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0:
+            self.request.can_attend = 0
 
         return context
 
@@ -103,11 +109,11 @@ def event_delete_view(request, pk):
     }
     return render(request, "voluntariat/delete.html", context)
 
+
 def event_attend_view(request, pk):
     obj = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
-        user = models.User.objects.get(username=request.user.username)
-        participation = models.Participantion(voluntar=user, event=obj, rating=1, feedback='')
+        participation = models.Participantion(voluntar=request.user, event=obj, rating=1, feedback='')
         participation.save()
         return redirect(reverse('voluntariat:dashboard'))
 
@@ -116,6 +122,18 @@ def event_attend_view(request, pk):
     }
     return render(request, "voluntariat/attend.html", context)
 
+def event_unattend_view(request, pk):
+    obj = get_object_or_404(Event, pk=pk)
+    if request.method == "POST":
+        user = models.User.objects.get(username=request.user.username)
+        participation = models.Participantion.objects.filter(voluntar=user, event=obj)
+        participation.delete()
+        return redirect(reverse('voluntariat:dashboard'))
+
+    context = {
+        "event": obj
+    }
+    return render(request, "voluntariat/unattend.html", context)
 
 def login_view(request):
     if request.method == 'POST':
