@@ -1,9 +1,7 @@
 
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinLengthValidator
 from django.db import models
-from django.urls import reverse
-
-
 from django.urls import reverse
 
 
@@ -18,18 +16,20 @@ class Event(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
-    send_bird_channel_url = models.CharField(max_length=100,default='default')
+    send_bird_channel_url = models.CharField(max_length=100, default='default')
 
     def get_absolute_url(self):
         return reverse('voluntariat:event-detail', args=[str(self.id)])
 
 
 class User(AbstractUser):
-    email = models.CharField(max_length=100)
+    username = models.CharField(max_length=30, unique=True, validators=[MinLengthValidator(8)])
+    email = models.EmailField(max_length=100, unique=True)
     last_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     age = models.IntegerField(default=30)
     personal_description = models.TextField()
+    picture = models.ImageField(upload_to='profile_images', default='git_images/default-profile.jpg', max_length=255)
 
     stripe_client_id = models.CharField(max_length=1000)
     stripe_customer_id = models.CharField(max_length=1000)

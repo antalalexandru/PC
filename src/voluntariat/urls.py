@@ -16,4 +16,7 @@ urlpatterns = [
     path('event/<int:pk>/update/', views.event_update_view, name='event-update'),
     path('event/<int:pk>/attend/', views.event_attend_view, name='event-attend'),
     path('event/<int:pk>/unattend/', views.event_unattend_view, name='event-unattend'),
+    path('myprofile/', views.my_profile, name='myprofile'),
+    path('myprofile/update/', views.my_profile_update, name="myprofile-update"),
+    path('myprofile/changePassword/', views.my_profile_change_password, name="myprofile-change-password")
 ]

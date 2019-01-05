@@ -1,7 +1,6 @@
 import pytest
 from voluntariat.models import Event, User, Participantion
 from django.urls import reverse
-from django.db import models
 from datetime import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -172,7 +171,7 @@ def test_update_wrongId(client, event, event3, db):
 def test_my_events(client, event, db):
     username = "user1"
     password = "bar"
-    User.objects.create_user(username=username, password=password)
+    User.objects.create_user(username=username, password=password, email="testemail@test.com")
     client.login(username=username, password=password)
     client.post(reverse('voluntariat:create'), event)
     resp = client.get(reverse('voluntariat:myevents'))
@@ -248,8 +247,3 @@ def test_can_unattend_event(client,  event_instance,user_instance2):
     resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
     assert b'Unattend' in resp.content
     client.logout()
-
-
-
-
-
