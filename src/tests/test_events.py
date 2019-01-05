@@ -20,7 +20,6 @@ def user_instance2(request, db):
     return analiza_user
 
 
-
 @pytest.fixture
 def event_instance(user_instance):
     small_gif = (
@@ -246,4 +245,10 @@ def test_can_unattend_event(client,  event_instance,user_instance2):
     client.force_login(user_instance2)
     resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
     assert b'Unattend' in resp.content
+    client.logout()
+
+def test_organizer_event(client,  event_instance,user_instance):
+    client.force_login(user_instance)
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
+    assert b'Sunteti organizatorul acestui eveniment' in resp.content
     client.logout()
