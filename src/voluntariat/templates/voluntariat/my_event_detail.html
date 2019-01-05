@@ -23,5 +23,8 @@
      {% if request.can_attend == 2 %}
        <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
     {% endif %}
+      {% if request.can_attend == 3 %}
+       <p>Sunteti organizatorul acestui eveniment</p>
+    {% endif %}
 
 {% endblock %}

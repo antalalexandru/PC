@@ -44,8 +44,10 @@ class EventDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
-        if self.request.user.id is None:
+        if self.request.user.id is None :
             self.request.can_attend = 2
+        elif len(models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) != 0 :
+            self.request.can_attend = 3
         elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
                                                     event_id=self.kwargs['pk'])) == 0 and len(
             models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0:
