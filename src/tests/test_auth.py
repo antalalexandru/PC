@@ -4,7 +4,7 @@ from voluntariat.models import User
 
 @pytest.fixture
 def user(request, db):
-    analiza_user = User.objects.create(username='user_test', email='user_test@test.com', age=18)
+    analiza_user = User.objects.create(username='user_test', email='user_test123@test.com', age=18)
     analiza_user.set_password('password_test')
     analiza_user.save()
     return analiza_user
