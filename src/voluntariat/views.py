@@ -1,12 +1,15 @@
+import json
+import uuid
+
+import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import generic
-import requests
 
 from .forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
-from .models import Event, User
+from .models import Event
 
 
 class EventListView(generic.ListView):
@@ -49,7 +52,26 @@ def eventCreateView(request):
         if form.is_valid():
             event = form.save(commit=False)
             event.organizer = request.user
+
+            # save Sendbird group url
+            event.send_bird_channel_url = str(uuid.uuid4())
             event.save()
+
+            # create Sendbird channel for the event
+            headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+            data = json.dumps({
+                'name': event.name,
+                'channel_url': event.send_bird_channel_url,
+            })
+            res = requests.post('https://api.sendbird.com/v3/group_channels',
+                                headers=headers,
+                                data=data,
+                                files='')
+
+            # save Sendbird group url
+            event.send_bird_channel_url = ""
+            event.save()
+
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
 
     else:
@@ -71,8 +93,6 @@ def event_update_view(request, pk):
             event.organizer = request.user
             event.save()
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
-
-
     else:
         form = EventForm(instance=event)
 
@@ -158,12 +178,26 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
+
+            # create Sendbird user based on secure hash
+            user.sendbird_user_id = str(uuid.uuid4())
+            user.save()
+            headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+            data = json.dumps({
+                'user_id': user.sendbird_user_id,
+                'nickname': user.username,
+                'profile_url': '',
+            })
+            res = requests.post('https://api.sendbird.com/v3/users',
+                                headers=headers,
+                                data=data,
+                                files='')
+
             return redirect('voluntariat:dashboard')
     else:
         form = SignUpForm()
