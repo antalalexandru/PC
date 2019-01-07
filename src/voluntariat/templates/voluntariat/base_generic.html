@@ -60,6 +60,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'voluntariat:dashboard' %}">Evenimente</a>
                 </li>
+
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'voluntariat:myevents' %}">Evenimentele mele</a>
@@ -68,6 +69,9 @@
                         <a class="nav-link" href="{% url 'voluntariat:create' %}">Adaugă eveniment</a>
                     </li>
                 {% endif %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'voluntariat:userlist' %}">Voluntari</a>
+                </li>
             </ul>
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">

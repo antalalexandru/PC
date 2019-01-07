@@ -43,6 +43,21 @@ class MyEventListView(generic.ListView):
     template_name = "voluntariat/myeventlist.html"
 
 
+class UserListView(generic.ListView):
+    model = User
+    paginate_by = 10
+
+    def get_queryset(self):
+        query = self.request.GET.get("query",None)
+        list = User.objects.exclude(first_name__exact='')
+        lista =list.exclude(pk=self.request.user.pk)
+        return lista
+
+    context_object_name = 'user_list'
+    queryset = User.objects.all()
+    template_name = "voluntariat/userlist.html"
+
+
 class EventDetailView(generic.DetailView):
     model = Event
     template_name = "voluntariat/my_event_detail.html"
@@ -215,6 +230,10 @@ def my_profile(request):
     context = {"user": request.user}
     return render(request, 'voluntariat/myprofile.html', context)
 
+
+def user_profile(request, id):
+    user = get_object_or_404(User, id=id)
+    return render(request, 'voluntariat/userprofile.html', {'user': user})
 
 @login_required
 def my_profile_update(request):
