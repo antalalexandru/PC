@@ -1,3 +1,8 @@
+import json
+import uuid
+
+import requests
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -5,8 +10,8 @@ from voluntariat import models
 from django.urls import reverse
 from django.views import generic
 
-from .forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
-from .models import Event, User
+from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
+from ..models import Event, User
 
 
 class EventListView(generic.ListView):
@@ -67,7 +72,33 @@ def eventCreateView(request):
         if form.is_valid():
             event = form.save(commit=False)
             event.organizer = request.user
+
+            # save Sendbird group url
+            event.send_bird_channel_url = str(uuid.uuid4())
             event.save()
+
+            # create Sendbird channel for the event
+            headers = settings.API_TOKEN_CHAT
+            data = json.dumps({
+                'name': event.name,
+                'channel_url': event.send_bird_channel_url,
+                'is_public': True,
+            })
+            requests.post('https://api.sendbird.com/v3/group_channels', headers=headers, data=data)
+
+            # add the event manager to the channel
+            data = json.dumps({'user_id': request.user.sendbird_user_id})
+            requests.put('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/join', headers=headers, data=data)
+
+            # send create message
+            data = json.dumps({
+                'message_type': 'MESG',
+                'user_id': request.user.sendbird_user_id,
+                'message': request.user.username + " created the channel",
+            })
+            requests.post('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/messages',
+                          headers=headers, data=data)
+
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
 
     else:
@@ -89,8 +120,6 @@ def event_update_view(request, pk):
             event.organizer = request.user
             event.save()
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
-
-
     else:
         form = EventForm(instance=event)
 
@@ -112,11 +141,27 @@ def event_delete_view(request, pk):
     return render(request, "voluntariat/delete.html", context)
 
 
+# this should require login?
 def event_attend_view(request, pk):
     obj = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
         participation = models.Participantion(voluntar=request.user, event=obj, rating=1, feedback='')
         participation.save()
+
+        # add user to channel
+        headers = settings.API_TOKEN_CHAT
+        data = json.dumps({'user_id': request.user.sendbird_user_id})
+        requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/join', headers=headers, data=data)
+
+        # send welcome message
+        data = json.dumps({
+            'message_type': 'MESG',
+            'user_id': request.user.sendbird_user_id,
+            'message': request.user.username + " joined the channel",
+        })
+        requests.post('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/messages',
+                     headers=headers, data=data)
+
         return redirect(reverse('voluntariat:dashboard'))
 
     context = {
@@ -124,18 +169,27 @@ def event_attend_view(request, pk):
     }
     return render(request, "voluntariat/attend.html", context)
 
+
+# this should require login?
 def event_unattend_view(request, pk):
     obj = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
         user = models.User.objects.get(username=request.user.username)
         participation = models.Participantion.objects.filter(voluntar=user, event=obj)
         participation.delete()
+
+        # remove user from channel
+        headers = settings.API_TOKEN_CHAT
+        data = json.dumps({'user_ids': [request.user.sendbird_user_id]})
+        requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/leave', headers=headers, data=data)
+
         return redirect(reverse('voluntariat:dashboard'))
 
     context = {
         "event": obj
     }
     return render(request, "voluntariat/unattend.html", context)
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -201,12 +255,23 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
+
+            # create Sendbird user based on secure hash
+            user.sendbird_user_id = str(uuid.uuid4())
+            user.save()
+            headers = settings.API_TOKEN_CHAT
+            data = json.dumps({
+                'user_id': user.sendbird_user_id,
+                'nickname': user.username,
+                'profile_url': '',
+            })
+            requests.post('https://api.sendbird.com/v3/users', headers=headers, data=data)
+
             return redirect('voluntariat:dashboard')
     else:
         form = SignUpForm()
