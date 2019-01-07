@@ -12,8 +12,8 @@
         {% if user.participations != null %}
 
             <li class="list-group-item"><strong>Participari: </strong>
-                {% for participation in user.participations.items %}
-                    {{ participation.event }}, {{ participation.rating }}<br>
+                {% for participation in user.participations.all %}
+                    {{ participation.name}} <br>
                 {% endfor %}
             </li>
 

@@ -48,10 +48,12 @@ class UserListView(generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        query = self.request.GET.get("query",None)
+        query = self.request.GET.get("input",None)
         list = User.objects.exclude(first_name__exact='')
-        lista =list.exclude(pk=self.request.user.pk)
-        return lista
+        list =list.exclude(pk=self.request.user.pk)
+        if query is not None:
+            list=list.filter(first_name__icontains=query)
+        return list
 
     context_object_name = 'user_list'
     queryset = User.objects.all()
