@@ -14,6 +14,8 @@
 
     {% endif %}
 
+    <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
+
     {% if request.can_attend == 1 %}
         <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
     {% endif %}
