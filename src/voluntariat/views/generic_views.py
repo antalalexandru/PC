@@ -2,6 +2,7 @@ import json
 import uuid
 
 import requests
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -9,8 +10,8 @@ from voluntariat import models
 from django.urls import reverse
 from django.views import generic
 
-from .forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
-from .models import Event, User
+from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
+from ..models import Event, User
 
 
 class EventListView(generic.ListView):
@@ -77,7 +78,7 @@ def eventCreateView(request):
             event.save()
 
             # create Sendbird channel for the event
-            headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+            headers = settings.API_TOKEN_CHAT
             data = json.dumps({
                 'name': event.name,
                 'channel_url': event.send_bird_channel_url,
@@ -148,7 +149,7 @@ def event_attend_view(request, pk):
         participation.save()
 
         # add user to channel
-        headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+        headers = settings.API_TOKEN_CHAT
         data = json.dumps({'user_id': request.user.sendbird_user_id})
         requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/join', headers=headers, data=data)
 
@@ -178,7 +179,7 @@ def event_unattend_view(request, pk):
         participation.delete()
 
         # remove user from channel
-        headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+        headers = settings.API_TOKEN_CHAT
         data = json.dumps({'user_ids': [request.user.sendbird_user_id]})
         requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/leave', headers=headers, data=data)
 
@@ -263,7 +264,7 @@ def signup(request):
             # create Sendbird user based on secure hash
             user.sendbird_user_id = str(uuid.uuid4())
             user.save()
-            headers = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+            headers = settings.API_TOKEN_CHAT
             data = json.dumps({
                 'user_id': user.sendbird_user_id,
                 'nickname': user.username,
@@ -281,11 +282,3 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
-
-
-def chat(request):
-    return render(request, 'voluntariat/chat/chat.html')
-
-
-def chat_index(request):
-    return render(request, 'voluntariat/chat/index.html')
