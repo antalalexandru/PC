@@ -9,9 +9,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from voluntariat import models
 from django.urls import reverse
 from django.views import generic
-
+from django.db.models import Q
 from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
 from ..models import Event, User
+from django.db.models import Count
 
 
 class EventListView(generic.ListView):
@@ -41,6 +42,24 @@ class MyEventListView(generic.ListView):
     context_object_name = 'my_event_list'
     queryset = Event.objects.all()
     template_name = "voluntariat/myeventlist.html"
+
+
+class UserListView(generic.ListView):
+    model = User
+    paginate_by = 10
+
+    def get_queryset(self):
+        query = self.request.GET.get("input",None)
+        list = User.objects.exclude(first_name__exact='')
+        list =list.exclude(pk=self.request.user.pk)
+        if query is not None:
+            list= list.filter(Q(first_name__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
+        list=list.annotate(participari= Count('participations')).order_by('-participari')
+        return list
+
+    context_object_name = 'user_list'
+    queryset = User.objects.all()
+    template_name = "voluntariat/userlist.html"
 
 
 class EventDetailView(generic.DetailView):
@@ -215,6 +234,10 @@ def my_profile(request):
     context = {"user": request.user}
     return render(request, 'voluntariat/myprofile.html', context)
 
+
+def user_profile(request, id):
+    user = get_object_or_404(User, id=id)
+    return render(request, 'voluntariat/userprofile.html', {'user': user})
 
 @login_required
 def my_profile_update(request):

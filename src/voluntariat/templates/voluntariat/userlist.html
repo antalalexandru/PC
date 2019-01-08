@@ -1,0 +1,27 @@
+{% extends "voluntariat/base_generic.html" %}
+
+{% block content %}
+<h1>Voluntari</h1>
+  {% if user_list %}
+  <ul class="list-group">
+
+    {% for user in user_list %}
+      <li>
+        <div>
+            <a href="{% url 'voluntariat:userprofile' user.id %}">
+                <img src="{{ user.picture.url }}" style="max-width: 100px;" />
+                {{ user.first_name }} {{ user.last_name }}
+
+            </a>
+            {% if user_list.first.pk == user.pk %}
+                    Voluntarul Lunii
+            {% endif %}
+
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>Nu exista voluntari.</p>
+  {% endif %}
+{% endblock %}

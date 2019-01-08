@@ -20,4 +20,6 @@ urlpatterns = [
     path('myprofile/changePassword/', generic_views.my_profile_change_password, name="myprofile-change-password"),
     path('chat/', chat_views.chat, name='chat'),
     path('chat/index.html', chat_views.chat_index, name='chat_index'),
+    path('userlist/', generic_views.UserListView.as_view(), name='userlist'),
+    path('userprofile/<int:id>/',generic_views.user_profile,name='userprofile'),
 ]
