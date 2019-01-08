@@ -9,9 +9,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from voluntariat import models
 from django.urls import reverse
 from django.views import generic
-
+from django.db.models import Q
 from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
 from ..models import Event, User
+from django.db.models import Count
 
 
 class EventListView(generic.ListView):
@@ -52,7 +53,8 @@ class UserListView(generic.ListView):
         list = User.objects.exclude(first_name__exact='')
         list =list.exclude(pk=self.request.user.pk)
         if query is not None:
-            list=list.filter(first_name__icontains=query)
+            list= list.filter(Q(first_name__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
+        list=list.annotate(participari= Count('participations')).order_by('-participari')
         return list
 
     context_object_name = 'user_list'
