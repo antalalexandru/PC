@@ -10,22 +10,32 @@
 </header> -->
 <h1 style="color:red">My Events</h1>
   {% if my_event_list %}
-  <ul style="list-style-type:none" class="list-group">
+  <table class="table table-striped">
+  <tbody>
     {% for event in my_event_list %}
-      <li >
-        <div>
-            <a href="{{ event.get_absolute_url }}">{{ event.name }}
-            <img src="{{ event.picture.url }}" style="max-width: 100px;"/>
-                <a style="color:red" href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
-                <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
-                {% if event.can_add_participants == True %}
-                    <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
-                {% endif %}
+      <tr>
+        <th scope="row" class="align-middle" style="width :30px">#{{ event.id }}</th>
+        <td class="align-middle" style="width :90px">
+            <a href="{{ event.get_absolute_url }}">
+                <img src="{{ event.picture.url }}" style="max-width: 70px;" />
             </a>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
+        </td>
+          <td class="align-middle">
+              <h4><a href="{{ event.get_absolute_url }}">{{ event.name }}</a></h4>
+                {% if event.organizer == request.user %}
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a  href="{% url 'voluntariat:event-delete' event.id %}"  style="color: #cc0000"><i class="fas fa-times"></i> Sterge</a></li>
+                        <li class="list-inline-item"><a href="{% url 'voluntariat:event-update' event.id %}"><i class="fas fa-pencil-alt"></i> Editeaza</a></li>
+                        {% if event.can_add_participants == True %}
+                            <li class="list-inline-item"><a href="{% url 'voluntariat:event-stop-attendings' event.id %}"><i class="fas fa-ban"></i> Opreste inscrierile</a></li>
+                        {% endif %}
+                    </ul>
+                 {% endif %}
+          </td>
+      </tr>
+  {% endfor %}
+  </tbody>
+  </table>
   {% else %}
     <p>There are no events in the library.</p>
   {% endif %}

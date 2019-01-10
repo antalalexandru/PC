@@ -4,6 +4,10 @@
 <head>
     <link rel="stylesheet" href="{% static 'CSS/styles.css' %}">
     <link rel="stylesheet" href="{% static 'CSS/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'CSS/styles.css' %}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 </head>
 <body>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -11,29 +15,47 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #264F7A">
     <div class="container">
         <a class="navbar-brand" href="{% url 'voluntariat:dashboard' %}">Voluntariat</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'voluntariat:dashboard' %}">Evenimente</a>
+                </li>
+
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'voluntariat:myevents' %}">Evenimentele mele</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'voluntariat:create' %}">Adaugă eveniment</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'voluntariat:userlist' %}">Voluntari</a>
+                </li>
+            </ul>
+
             <ul class="navbar-nav ml-auto">
                 {% if request.user.is_authenticated %}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">
-                            Bun venit, {{ request.user.username }}
-                        </a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'voluntariat:logout' %}">
-                            <i class="fas fa-sign-out-alt"></i> Log out
-                        </a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'voluntariat:myprofile' %}">
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img src="{{ user.picture.url }}" class="img-fluid rounded-circle" alt="..."
-                                 height="30" width="30"/>
-                            <i class="fas fa-user-plus"></i>Profilul meu
+                            height="30" width="30"/> {{ user.username }}
                         </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                            <a class="dropdown-item" href="{% url 'voluntariat:myprofile' %}">
+                             Profilul meu
+                            </a>
+                            <div class="dropdown-divider"></div>
+                             <a class="dropdown-item"  href="{% url 'voluntariat:logout' %}">
+                                 <i class="fas fa-sign-out-alt"></i> Deconectare
+                            </a>
+                        </div>
                     </li>
 
                 {% else %}
@@ -52,39 +74,7 @@
         </div>
     </div>
 </nav>
-<div class="navbar navbar-expand-lg navbar-dark"
-     style="background: linear-gradient(135deg, rgba(65,112,166,1) 0%,rgba(8,152,160,1) 100%);">
-    <div class="container">
-        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'voluntariat:dashboard' %}">Evenimente</a>
-                </li>
 
-                {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'voluntariat:myevents' %}">Evenimentele mele</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'voluntariat:create' %}">Adaugă eveniment</a>
-                    </li>
-                {% endif %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'voluntariat:userlist' %}">Voluntari</a>
-                </li>
-            </ul>
-        </div>
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <div class="navbar-nav ml-auto">
-                <!-- Search form -->
-                <!-- Search form -->
-                <form method='GET' >
-                    <input class="form-control" name='input' type="text" placeholder="Search" aria-label="Search">
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- Page Content -->
 <div class="container">
     {% block content %}
