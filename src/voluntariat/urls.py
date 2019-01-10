@@ -1,3 +1,4 @@
+
 from django.urls import path
 from .views import generic_views, chat_views
 
@@ -15,6 +16,7 @@ urlpatterns = [
     path('event/<int:pk>/update/', generic_views.event_update_view, name='event-update'),
     path('event/<int:pk>/attend/', generic_views.event_attend_view, name='event-attend'),
     path('event/<int:pk>/unattend/', generic_views.event_unattend_view, name='event-unattend'),
+    path('event/<int:pk>/stopAttendings/', generic_views.event_stop_attendings_view, name='event-stop-attendings'),
     path('myprofile/', generic_views.my_profile, name='myprofile'),
     path('myprofile/update/', generic_views.my_profile_update, name="myprofile-update"),
     path('myprofile/changePassword/', generic_views.my_profile_change_password, name="myprofile-change-password"),

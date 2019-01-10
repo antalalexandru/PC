@@ -68,14 +68,18 @@ class EventDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
-        if self.request.user.id is None :
+        if self.request.user.id is None and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
             self.request.can_attend = 2
         elif len(models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) != 0 :
             self.request.can_attend = 3
         elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
                                                     event_id=self.kwargs['pk'])) == 0 and len(
-            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0:
+            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
             self.request.can_attend = 1
+        elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
+                                                    event_id=self.kwargs['pk'])) == 0 and len(
+            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is False:
+            self.request.can_attend = 4
         else:
             # len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
             #                                           event_id=self.kwargs['pk'])) != 0 and len(
@@ -208,6 +212,20 @@ def event_unattend_view(request, pk):
         "event": obj
     }
     return render(request, "voluntariat/unattend.html", context)
+
+@login_required
+def event_stop_attendings_view(request, pk):
+    obj = get_object_or_404(Event, pk=pk)
+    if request.method == "POST":
+        obj.can_add_participants = False
+        obj.save(update_fields=['can_add_participants'])
+
+        return redirect(reverse('voluntariat:dashboard'))
+
+    context = {
+        "event": obj
+    }
+    return render(request, "voluntariat/stop_attendings.html", context)
 
 
 def login_view(request):

@@ -17,6 +17,7 @@ class Event(models.Model):
     end_date = models.DateTimeField()
 
     send_bird_channel_url = models.CharField(max_length=100, default='default')
+    can_add_participants = models.BooleanField(default=True)
 
     def get_absolute_url(self):
         return reverse('voluntariat:event-detail', args=[str(self.id)])
