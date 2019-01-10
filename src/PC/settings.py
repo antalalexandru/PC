@@ -129,4 +129,4 @@ LOGIN_URL = '/login/'
 
 API_TOKEN_CHAT = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
 
-API_TOKEN_STRIPE = {'Authorization': 'Bearer sk_test_Y1Y4cn7TCAHalUxXBS0EEln7'}
+API_TOKEN_STRIPE = 'sk_test_Y1Y4cn7TCAHalUxXBS0EEln7'

@@ -1,14 +1,11 @@
-import json
-
-import requests
+import stripe
 from django.shortcuts import render
-from requests.auth import HTTPDigestAuth
 
 from src.PC import settings
 
 
 def stripe(request):
-    headers = settings.API_TOKEN_STRIPE
-    res = requests.get('https://api.stripe.com/v1/balance', headers=headers)
+    stripe.api_key = settings.API_TOKEN_STRIPE
+    res = stripe.Balance.retrieve()
 
     return render(request, 'voluntariat/stripe/stripe.html')
