@@ -34,6 +34,32 @@ def event_instance(user_instance):
                                 benefits='Cluj', start_date=date, end_date=date, organizer=user_instance)
 
 @pytest.fixture
+def event_instance_attendings(user_instance):
+    small_gif = (
+        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+        b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+        b'\x02\x4c\x01\x00\x3b'
+    )
+    uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
+    date = datetime.now()
+
+    return Event.objects.create(name='Denisa', picture=uploaded, location='Cluj', description='Cluj',\
+                                benefits='Cluj', start_date=date, end_date=date, organizer=user_instance, can_add_participants=True)
+
+@pytest.fixture
+def event_instance_noattendings(user_instance):
+    small_gif = (
+        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+        b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+        b'\x02\x4c\x01\x00\x3b'
+    )
+    uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
+    date = datetime.now()
+
+    return Event.objects.create(name='Denisa', picture=uploaded, location='Cluj', description='Cluj',\
+                                benefits='Cluj', start_date=date, end_date=date, organizer=user_instance, can_add_participants=False)
+
+@pytest.fixture
 def event(request, db):
     small_gif = (
         b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
@@ -251,4 +277,26 @@ def test_organizer_event(client,  event_instance,user_instance):
     client.force_login(user_instance)
     resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
     assert b'Sunteti organizatorul acestui eveniment' in resp.content
+    client.logout()
+
+def test_close_attendings(client, user_instance, event_instance_attendings):
+    client.force_login(user_instance)
+    assert event_instance_attendings.can_add_participants == True
+
+    response = client.post(reverse('voluntariat:event-stop-attendings', kwargs={'pk': event_instance_attendings.pk}))
+    assert (response.status_code == 302)
+    assert (Event.objects.filter(name='Denisa').exists() == True)
+    assert (Event.objects.filter(name='Denisa')[0].can_add_participants == False)
+    client.logout()
+
+def test_close_attendings_fail( client, user_instance, event_instance_attendings):
+    client.force_login(user_instance)
+    resp = client.get(reverse('voluntariat:event-stop-attendings', kwargs={'pk': event_instance_attendings.pk}))
+    assert (Event.objects.filter(name='Denisa')[0].can_add_participants == True)
+    client.logout()
+
+def test_close_attendings_event(client, event_instance_noattendings,user_instance2):
+    client.force_login(user_instance2)
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance_noattendings.pk}))
+    assert b'La acest eveniment nu se mai fac inscrieri' in resp.content
     client.logout()

@@ -11,8 +11,12 @@
     {% if event.organizer == request.user %}
         <a href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
         <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
+        {% if event.can_add_participants == True %}
+            <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
+        {% endif %}
 
     {% endif %}
+
 
     <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
 
@@ -27,6 +31,9 @@
     {% endif %}
       {% if request.can_attend == 3 %}
        <p>Sunteti organizatorul acestui eveniment</p>
+    {% endif %}
+    {% if request.can_attend == 4 %}
+       <p>La acest eveniment nu se mai fac inscrieri</p>
     {% endif %}
 
 {% endblock %}
