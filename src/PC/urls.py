@@ -18,7 +18,6 @@ from django.urls import path, include
 from django.conf.urls.static import static
 
 from PC import settings
-from voluntariat import views
 
 urlpatterns = [
     path('', include('voluntariat.urls')),

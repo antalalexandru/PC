@@ -1,6 +1,6 @@
 {% extends "voluntariat/base_generic.html" %}
 {% block content %}
-    <h1>Detalii utilizator</h1>
+    <h1>Detalii Voluntar</h1>
     <br>
     <img src="{{ user.picture.url }}" class="rounded float-left" alt="..." height="200" width="200"/>
     <ul class="list-group list-group-flush">
@@ -13,7 +13,7 @@
 
             <li class="list-group-item"><strong>Participari: </strong>
                 {% for participation in user.participations.all %}
-                    {{ participation.name}}<br>
+                    {{ participation.name}} <br>
                 {% endfor %}
             </li>
 
@@ -23,15 +23,5 @@
     </ul>
     <br>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <a href="{% url 'voluntariat:myprofile-update' %}"
-                   class="btn btn-primary  custom-button-width .navbar-right">Editare profil</a>
-                <a href="{% url 'voluntariat:myprofile-change-password' %}"
-                   class="btn btn-primary   custom-button-width .navbar-right">Schimba parola</a>
-            </div>
-        </div>
-    </div>
 
 {% endblock %}

@@ -1,14 +1,63 @@
 import pytest
-from voluntariat.models import Event, User
+from voluntariat.models import Event, User, Participantion
 from django.urls import reverse
-from voluntariat.forms import EventForm
-from django.db import models
 from datetime import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
-from unittest import mock
-from django.core.files import File
-import tempfile
 
+
+@pytest.fixture
+def user_instance(request, db):
+    analiza_user = User.objects.create(username='user_test', email='user_test@test.com', age=18)
+    analiza_user.set_password('password_test')
+    analiza_user.save()
+    return analiza_user
+
+@pytest.fixture
+def user_instance2(request, db):
+    analiza_user = User.objects.create(username='user_test2', email='user_test2@test.com', age=18)
+    analiza_user.set_password('password_test')
+    analiza_user.save()
+    return analiza_user
+
+
+@pytest.fixture
+def event_instance(user_instance):
+    small_gif = (
+        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+        b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+        b'\x02\x4c\x01\x00\x3b'
+    )
+    uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
+    date = datetime.now()
+
+    return Event.objects.create(name='Denis', picture=uploaded, location='Cluj', description='Cluj',\
+                                benefits='Cluj', start_date=date, end_date=date, organizer=user_instance)
+
+@pytest.fixture
+def event_instance_attendings(user_instance):
+    small_gif = (
+        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+        b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+        b'\x02\x4c\x01\x00\x3b'
+    )
+    uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
+    date = datetime.now()
+
+    return Event.objects.create(name='Denisa', picture=uploaded, location='Cluj', description='Cluj',\
+                                benefits='Cluj', start_date=date, end_date=date, organizer=user_instance, can_add_participants=True)
+
+@pytest.fixture
+def event_instance_noattendings(user_instance):
+    small_gif = (
+        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+        b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+        b'\x02\x4c\x01\x00\x3b'
+    )
+    uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
+    date = datetime.now()
+
+    return Event.objects.create(name='Denisa', picture=uploaded, location='Cluj', description='Cluj',\
+                                benefits='Cluj', start_date=date, end_date=date, organizer=user_instance, can_add_participants=False)
 
 @pytest.fixture
 def event(request, db):
@@ -147,7 +196,7 @@ def test_update_wrongId(client, event, event3, db):
 def test_my_events(client, event, db):
     username = "user1"
     password = "bar"
-    User.objects.create_user(username=username, password=password)
+    User.objects.create_user(username=username, password=password, email="testemail@test.com")
     client.login(username=username, password=password)
     client.post(reverse('voluntariat:create'), event)
     resp = client.get(reverse('voluntariat:myevents'))
@@ -172,3 +221,82 @@ def test_see_events(client, event, event2, event3, db):
     client.logout()
     resp = client.get(reverse('voluntariat:dashboard'))
     assert len(resp.context['my_event_list']) == 3
+
+
+def test_attend_event(client, user_instance, event_instance):
+    client.force_login(user_instance)
+    lungime = len(Participantion.objects.all())
+    assert lungime == 0
+
+    client.post(reverse('voluntariat:event-attend', kwargs={'pk': event_instance.pk}))
+    assert len(Participantion.objects.all()) == 1
+    client.logout()
+
+def test_unattend_event(client, user_instance, event_instance):
+    client.force_login(user_instance)
+    client.post(reverse('voluntariat:event-attend', kwargs={'pk': event_instance.pk}))
+    lungime = len(Participantion.objects.all())
+    assert lungime == 1
+
+    client.post(reverse('voluntariat:event-unattend', kwargs={'pk': event_instance.pk}))
+    assert len(Participantion.objects.all()) == 0
+    client.logout()
+
+def test_attend_event_fail( client, user_instance, event_instance):
+    client.force_login(user_instance)
+    resp = client.get(reverse('voluntariat:event-attend', kwargs={'pk': event_instance.pk}))
+    assert len(Participantion.objects.all()) == 0
+    client.logout()
+
+def test_unattend_event_fail( client, user_instance, event_instance):
+    client.force_login(user_instance)
+    resp = client.get(reverse('voluntariat:event-unattend', kwargs={'pk': event_instance.pk}))
+    assert len(Participantion.objects.all()) == 0
+    client.logout()
+
+def test_can_attend_event_no_user(client, user_instance, event_instance):
+
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
+    assert b'Pentru a participa la acest eveniment va rugam sa va logati' in resp.content
+
+def test_can_attend_event(client,  event_instance,user_instance2):
+    client.force_login(user_instance2)
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
+    assert b'Attend' in resp.content
+    client.logout()
+
+def test_can_unattend_event(client,  event_instance,user_instance2):
+    participation = Participantion(voluntar=user_instance2, event=event_instance, rating=1, feedback='')
+    participation.save()
+    client.force_login(user_instance2)
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
+    assert b'Unattend' in resp.content
+    client.logout()
+
+def test_organizer_event(client,  event_instance,user_instance):
+    client.force_login(user_instance)
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
+    assert b'Sunteti organizatorul acestui eveniment' in resp.content
+    client.logout()
+
+def test_close_attendings(client, user_instance, event_instance_attendings):
+    client.force_login(user_instance)
+    assert event_instance_attendings.can_add_participants == True
+
+    response = client.post(reverse('voluntariat:event-stop-attendings', kwargs={'pk': event_instance_attendings.pk}))
+    assert (response.status_code == 302)
+    assert (Event.objects.filter(name='Denisa').exists() == True)
+    assert (Event.objects.filter(name='Denisa')[0].can_add_participants == False)
+    client.logout()
+
+def test_close_attendings_fail( client, user_instance, event_instance_attendings):
+    client.force_login(user_instance)
+    resp = client.get(reverse('voluntariat:event-stop-attendings', kwargs={'pk': event_instance_attendings.pk}))
+    assert (Event.objects.filter(name='Denisa')[0].can_add_participants == True)
+    client.logout()
+
+def test_close_attendings_event(client, event_instance_noattendings,user_instance2):
+    client.force_login(user_instance2)
+    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance_noattendings.pk}))
+    assert b'La acest eveniment nu se mai fac inscrieri' in resp.content
+    client.logout()
