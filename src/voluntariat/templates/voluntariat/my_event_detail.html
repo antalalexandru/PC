@@ -1,39 +1,112 @@
 {% extends "voluntariat/base_generic.html" %}
-
 {% block content %}
-    <h1>Title: {{ event.name }}</h1>
-    <img src="{{ event.picture.url }}"/>
+<!-- <h1>Title: {{ event.name }}</h1>
+	<img src="{{ event.picture.url }}"/>
 
-    <p><strong>Summary:</strong> {{ event.description }}</p>
-    <p><strong>Benefits:</strong> {{ event.benefits }}</p>
-    <p><strong>Start Date:</strong> {{ event.start_date }}</p>
-    <p><strong>End date:</strong> {{ event.end_date }}</p>
-    {% if event.organizer == request.user %}
-        <a href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
-        <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
-        {% if event.can_add_participants == True %}
-            <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
-        {% endif %}
+	<p><strong>Summary:</strong> {{ event.description }}</p>
+	<p><strong>Benefits:</strong> {{ event.benefits }}</p>
+	<p><strong>Start Date:</strong> {{ event.start_date }}</p>
+	<p><strong>End date:</strong> {{ event.end_date }}</p>
+	{% if event.organizer == request.user %}
+	    <a href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
+	    <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
+	    {% if event.can_add_participants == True %}
+	        <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
+	    {% endif %}
 
-    {% endif %}
+	{% endif %}
 
 
-    <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
+	<a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
 
-    {% if request.can_attend == 1 %}
-        <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
-    {% endif %}
-    {% if request.can_attend == 0 %}
-        <a  href="{% url 'voluntariat:event-unattend' event.id %}">Unattend</a>
-    {% endif %}
-     {% if request.can_attend == 2 %}
-       <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
-    {% endif %}
-      {% if request.can_attend == 3 %}
-       <p>Sunteti organizatorul acestui eveniment</p>
-    {% endif %}
-    {% if request.can_attend == 4 %}
-       <p>La acest eveniment nu se mai fac inscrieri</p>
-    {% endif %}
+	{% if request.can_attend == 1 %}
+	    <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
+	{% endif %}
+	{% if request.can_attend == 0 %}
+	    <a  href="{% url 'voluntariat:event-unattend' event.id %}">Unattend</a>
+	{% endif %}
+	 {% if request.can_attend == 2 %}
+	   <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
+	{% endif %}
+	  {% if request.can_attend == 3 %}
+	   <p>Sunteti organizatorul acestui eveniment</p>
+	{% endif %}
+	{% if request.can_attend == 4 %}
+	   <p>La acest eveniment nu se mai fac inscrieri</p>
+	{% endif %}
 
+	-->
+<div class="row">
+	<!-- Post Content Column -->
+	<div class="col-lg-8">
+		<!-- Title -->
+		<h1 class="mt-4">{{ event.name }}</h1>
+		<!-- Author -->
+		<p class="lead">
+			organizat de
+			<a href="{% url 'voluntariat:userprofile' event.organizer.id %}">{{ event.organizer.username }}</a>
+		</p>
+		<hr>
+		<!-- Preview Image -->
+		<img class="img-fluid rounded" src="{{ event.picture.url }}" alt="">
+		<hr>
+		<p>
+		<h3>Descriere</h3>
+		</p>
+		<p>{{ event.description }}</p>
+		<hr>
+		<p>
+		<h3>Beneficii</h3>
+		</p>
+		<p>{{ event.benefits }}</p>
+	</div>
+	<!-- Sidebar Widgets Column -->
+	<div class="col-md-4">
+		{% if event.organizer == request.user %}
+		<p>
+		<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle btn-block" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Opţiuni
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<a class="dropdown-item" href="{% url 'voluntariat:event-update' event.id %}"><i class="fas fa-pencil-alt"></i> Editează</a>
+				{% if event.can_add_participants == True %}
+				<a class="dropdown-item" href="{% url 'voluntariat:event-stop-attendings' event.id %}"><i class="fas fa-minus-circle"></i> Opreşte înscrierile</a>
+				{% endif %}
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="{% url 'voluntariat:event-delete' event.id %}" style="color: #cc0000"><i class="fas fa-times-circle"></i> Şterge eveniment</a>
+			</div>
+		</div>
+		</p>
+		<p>
+			{% if request.can_attend == 1 %}
+			<a href="{% url 'voluntariat:event-attend' event.id %}"  class="btn btn-primary btn-block" role="button"><i class="fas fa-user-plus"></i> Înscriere eveniment</a>
+			{% endif %}
+			{% if request.can_attend == 0  %}
+			<a href="{% url 'voluntariat:event-unattend' event.id %}"  class="btn btn-warning btn-block" role="button"><i class="fas fa-user-minus"></i> Renunţare participare</a>
+			{% endif %}
+			{% if request.can_attend == 2  %}
+			<button type="button" class="btn btn-outline-danger btn-block" disabled>Autentificare necesară pentru participare</button>
+			{% endif %}
+			{% if request.can_attend == 4  %}
+			<button type="button" class="btn btn-outline-danger btn-block" disabled>La acest eveniment nu se mai fac înscrieri</button>
+			{% endif %}
+		</p>
+		{% endif %}
+		<!-- Side Widget -->
+		<div class="card my-4">
+			<h5 class="card-header">Detalii</h5>
+			<div class="card-body" style="padding: 5px;">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Locaţie: {{ event.location }}</li>
+					<li class="list-group-item"><i class="far fa-calendar-check"></i> Data început: {{ event.start_date|date:"j M Y, H:i" }}</li>
+					<li class="list-group-item"><i class="far fa-calendar-times"></i> Data sfârşit: {{ event.end_date|date:"j M Y, H:i" }}</li>
+				</ul>
+			</div>
+		</div>
+		<p><a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank" class="btn btn-info btn-block" role="button"><i class="fas fa-comments"></i> Chat eveniment</a>
+		</p>
+	</div>
+</div>
+<!-- /.row -->
 {% endblock %}

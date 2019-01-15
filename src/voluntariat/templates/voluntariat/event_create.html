@@ -1,10 +1,18 @@
 {% extends "voluntariat/base_generic.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+    {{ form.media }}
 <form enctype="multipart/form-data" method="POST"> {% csrf_token %}
 
 {{form|crispy}}
 <input type="submit" class="btn btn-success" value="Save"/>
 </form>
+
+    <script>(function () {
+	$(document).ready(function() {
+		$("#id_datetime").datetimepicker();
+	});
+})(jQuery);
+</script>
 
 {% endblock %}
