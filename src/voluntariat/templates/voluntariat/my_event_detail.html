@@ -78,7 +78,8 @@
 			</div>
 		</div>
 		</p>
-		<p>
+            {% endif %}
+		<p><div>
 			{% if request.can_attend == 1 %}
 			<a href="{% url 'voluntariat:event-attend' event.id %}"  class="btn btn-primary btn-block" role="button"><i class="fas fa-user-plus"></i> Înscriere eveniment</a>
 			{% endif %}
@@ -91,8 +92,8 @@
 			{% if request.can_attend == 4  %}
 			<button type="button" class="btn btn-outline-danger btn-block" disabled>La acest eveniment nu se mai fac înscrieri</button>
 			{% endif %}
-		</p>
-		{% endif %}
+    </div></p>
+
 		<!-- Side Widget -->
 		<div class="card my-4">
 			<h5 class="card-header">Detalii</h5>
