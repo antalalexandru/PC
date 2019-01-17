@@ -1,28 +1,53 @@
 {% extends "voluntariat/base_generic.html" %}
-
 {% block content %}
-<h1>Event List</h1>
-  {% if my_event_list %}
-  <ul class="list-group">
-    {% for event in my_event_list %}
-      <li>
-        <div>
-            <a href="{{ event.get_absolute_url }}">
-                <img src="{{ event.picture.url }}" style="max-width: 100px;" />
-                {{ event.name }}
-            </a>
-            {% if event.organizer == request.user %}
-                <a  href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
-                <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
-                {% if event.can_add_participants == True %}
-                    <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
-                {% endif %}
-            {% endif %}
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>There are no events in the library.</p>
-  {% endif %}
+{% if my_event_list %}
+<style>
+	.card-img-top {
+	width: 100%;
+	height: 10vw;
+	object-fit: cover;
+	}
+</style>
+<div class="row">
+	<!-- Blog Entries Column -->
+	<div class="col-md-8">
+		<h1 class="my-4">Events List</h1>
+		{% for event in my_event_list %}
+		<div class="card mb-4">
+			<a href="{{ event.get_absolute_url }}"><img class="card-img-top" src="{{ event.picture.url }}"></a>
+			<div class="card-body">
+				<h2 class="card-title">{{ event.name }}</h2>
+				<p class="card-text">
+					{{ event.description|truncatechars:255 }}
+				</p>
+				<a href="{{ event.get_absolute_url }}" class="btn btn-secondary">Detalii &rarr;</a>
+			</div>
+			<div class="card-footer text-muted">
+				<div class="d-flex justify-content-between">
+					<div>
+						Organizator: {{ event.organizer.username }}
+					</div>
+					<div>
+						<i class="far fa-calendar-check"></i> {{ event.start_date|date:"j M Y" }} <i class="fas fa-long-arrow-alt-right"></i> {{ event.end_date|date:"j M Y" }}
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	<!-- Sidebar Widgets Column -->
+	<div class="col-md-4">
+		<!-- Side Widget -->
+		<div class="card my-4">
+			<h5 class="card-header">Side Widget</h5>
+			<div class="card-body">
+				You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.row -->
+{% else %}
+<p>There are no events in the library.</p>
+{% endif %}
 {% endblock %}

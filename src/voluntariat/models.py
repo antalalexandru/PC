@@ -19,6 +19,9 @@ class Event(models.Model):
     send_bird_channel_url = models.CharField(max_length=100, default='default')
     can_add_participants = models.BooleanField(default=True)
 
+    requested_donation = models.PositiveIntegerField(default=0)
+    accumulated_donation = models.PositiveIntegerField(default=0)
+
     def get_absolute_url(self):
         return reverse('voluntariat:event-detail', args=[str(self.id)])
 

@@ -2,10 +2,16 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+    <div style="margin: 0 auto; max-width: 500px; padding: 20px 0;">
+    <h1>Autentificare</h1>
     {{ message }}
     <form class="form-horizontal" method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <input type="submit" class="btn btn-success" value="Submit">
+        <div style="text-align: center">
+            <p>Nu ai cont? <a href="{% url 'voluntariat:signup' %}">Creează unul acum</a>.</p>
+            <input type="submit" class="btn btn-success" value="Trimite">
+        </div>
     </form>
+    </div>
 {% endblock %}

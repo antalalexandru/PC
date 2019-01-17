@@ -1,6 +1,7 @@
 {% extends "voluntariat/base_generic.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+    {{ form.media }}
 <form enctype="multipart/form-data" method="POST"> {% csrf_token %}
 
 {{ form|crispy }}

@@ -2,6 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+    <div style="margin: 0 auto; max-width: 500px; padding: 20px 0;">
+    <h1>Creează cont</h1>
     {{ err_message }}
     <form class="form-horizontal" method="post">
         {% csrf_token %}
@@ -13,6 +15,9 @@
             {% endfor %}
           </p>
         {% endfor %}
-    <button type="submit" class="btn btn-success">Sign up</button>
+    <div style="text-align: center">
+        <button type="submit" class="btn btn-success">Sign up</button>
+     </div>
     </form>
+    </div>
 {% endblock %}

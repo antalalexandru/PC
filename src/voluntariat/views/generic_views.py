@@ -68,6 +68,19 @@ class EventDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
+
+        event = self.object
+
+        if event.requested_donation == 0:
+            self.request.donation_percentage = -1
+        else:
+            donation_percentage = event.accumulated_donation / event.requested_donation
+            if donation_percentage >= 1:
+                donation_percentage = 100
+            else:
+                donation_percentage *= 100
+            self.request.donation_percentage = donation_percentage
+
         if self.request.user.id is None and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
             self.request.can_attend = 2
         elif len(models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) != 0 :
@@ -319,7 +332,7 @@ def signup(request):
 
     return render(request, 'voluntariat/signup.html', {'form': form})
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')

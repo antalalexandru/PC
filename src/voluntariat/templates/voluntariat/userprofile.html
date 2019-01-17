@@ -1,7 +1,8 @@
 {% extends "voluntariat/base_generic.html" %}
 {% block content %}
-    <h1>Detalii Voluntar</h1>
-    <br>
+    <p><h1>Detalii Voluntar</h1></p>
+
+    <!--<br>
     <img src="{{ user.picture.url }}" class="rounded float-left" alt="..." height="200" width="200"/>
     <ul class="list-group list-group-flush">
         <li class="list-group-item"><strong>Nume: </strong>{{ user.last_name }}</li>
@@ -21,7 +22,62 @@
             <li class="list-group-item"><strong>Participari: </strong></li>
         {% endif %}
     </ul>
-    <br>
+    <br>-->
+
+        <table style="width: 100%">
+    <tr>
+        <td valign="top" style="width: 300px;">
+
+            <div style="text-align: center;">
+            <img class="card-img-top" alt="Card image cap" style="max-width: 220px;" src="{{ user.picture.url }}">
+        </div>
+  <div class="card-body">
+      <h3>{{ user.last_name }} {{ user.first_name }}</h3>
+      <h4><small class="text-muted">{{ user.username }}</small></h4>
+
+      <hr><i class="fas fa-envelope"></i> {{ user.email }}
+
+  </div>
+
+        </td>
+        <td valign="top">
+
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Despre mine</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Evenimente participante</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent" style="padding: 10px;">
+  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+      <p style="text-align: justify"><em>{{ user.personal_description }}</em></p>
+
+  </div>
+  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+      {% if user.participations != null %}
+
+          <ul class="list-group list-group-flush">
+
+          {% for participation in user.participations.all %}
+              <li class="list-group-item">{{ participation.name}}</li>
+          {% endfor %}
+
+          </ul>
+
+      {% endif %}
+
+  </div>
+</div>
+
+
+        </td>
+    </tr>
+    </table>
 
 
 {% endblock %}
