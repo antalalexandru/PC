@@ -79,20 +79,22 @@
 		</div>
 		</p>
             {% endif %}
-		<p><div>
-			{% if request.can_attend == 1 %}
-			<a href="{% url 'voluntariat:event-attend' event.id %}"  class="btn btn-primary btn-block" role="button"><i class="fas fa-user-plus"></i> Înscriere eveniment</a>
-			{% endif %}
-			{% if request.can_attend == 0  %}
-			<a href="{% url 'voluntariat:event-unattend' event.id %}"  class="btn btn-warning btn-block" role="button"><i class="fas fa-user-minus"></i> Renunţare participare</a>
-			{% endif %}
-			{% if request.can_attend == 2  %}
-			<button type="button" class="btn btn-outline-danger btn-block" disabled>Autentificare necesară pentru participare</button>
-			{% endif %}
-			{% if request.can_attend == 4  %}
-			<button type="button" class="btn btn-outline-danger btn-block" disabled>La acest eveniment nu se mai fac înscrieri</button>
-			{% endif %}
-    </div></p>
+		<p>
+            <div>
+                {% if request.can_attend == 1 %}
+                <a href="{% url 'voluntariat:event-attend' event.id %}"  class="btn btn-primary btn-block" role="button"><i class="fas fa-user-plus"></i> Înscriere eveniment</a>
+                {% endif %}
+                {% if request.can_attend == 0  %}
+                <a href="{% url 'voluntariat:event-unattend' event.id %}"  class="btn btn-warning btn-block" role="button"><i class="fas fa-user-minus"></i> Renunţare participare</a>
+                {% endif %}
+                {% if request.can_attend == 2  %}
+                <button type="button" class="btn btn-outline-danger btn-block" disabled>Autentificare necesară pentru participare</button>
+                {% endif %}
+                {% if request.can_attend == 4  %}
+                <button type="button" class="btn btn-outline-danger btn-block" disabled>La acest eveniment nu se mai fac înscrieri</button>
+                {% endif %}
+            </div>
+        </p>
 
 		<!-- Side Widget -->
 		<div class="card my-4">
@@ -105,8 +107,29 @@
 				</ul>
 			</div>
 		</div>
-		<p><a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank" class="btn btn-info btn-block" role="button"><i class="fas fa-comments"></i> Chat eveniment</a>
+		<p>
+            <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank" class="btn btn-info btn-block" role="button"><i class="fas fa-comments"></i> Chat eveniment</a>
 		</p>
+
+        {% if event.requested_donation > 0 %}
+
+            <div class="card my-4">
+                <h5 class="card-header"><i class="far fa-credit-card"></i> Donaţii</h5>
+                <div class="card-body" style="padding: 5px;">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Suma cumulată: ${{ event.accumulated_donation }} din $ {{ event.requested_donation }}
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ request.donation_percentage }}%"></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#" rel="noopener noreferrer" target="_blank" class="btn btn-light btn-block" role="button"><i class="far fa-money-bill-alt"></i> Donează</a>
+                        </li>
+                    </ul>
+			    </div>
+		    </div>
+        {% endif %}
+
 	</div>
 </div>
 <!-- /.row -->

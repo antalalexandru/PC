@@ -17,50 +17,14 @@ class LoginForm(forms.Form):
 
 
 class EventForm(forms.ModelForm):
-    # start_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
-
-    #start_date = forms.DateField(
-    #    widget=DateTimePickerInput(format='%Y')
-    #)
-
-    # end_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
-
-
-
     class Meta:
         model = Event
-        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date')
+        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date', 'requested_donation')
         widgets = {
             'start_date': DateTimePickerInput(format='%Y-%m-%d %H:%M'),
             'end_date': DateTimePickerInput(format='%Y-%m-%d %H:%M'),
         }
 
-'''
-        # start_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm", 'class': 'datetime-input'}))
-
-        start_date = forms.DateField(
-            widget=DateTimePickerInput(format='%Y-%m-%d %H:%M')
-        )
-
-        end_date = forms.DateField(
-            widget=DateTimePickerInput(format='%Y-%m-%d %H:%M')
-        )
-
-        # end_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
-
-        class Meta:
-            model = Event
-            fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date')
-
-            widgets = {
-                'start_date': DatePickerInput(format='%m/%d%Y'),  # python date-time format
-                'end_date': DatePickerInput(
-                    options={
-                        "format": "YYYY-MM-DD HH:mm",  # moment date-time format
-                    }
-                ),
-            }
-            '''
 
 class UserForm(forms.ModelForm):
     picture = forms.ImageField(label='Fotografia de  profil', required=False,
