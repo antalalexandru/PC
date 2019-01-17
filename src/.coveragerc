@@ -11,3 +11,4 @@ omit =
     *wsgi.py
     *widgets.py
     *chat_views.py
+    *stripe_views.py

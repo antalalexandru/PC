@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import generic_views, chat_views
+from .views import generic_views, chat_views, stripe_views
 
 app_name = 'voluntariat'
 
@@ -22,6 +22,7 @@ urlpatterns = [
     path('myprofile/changePassword/', generic_views.my_profile_change_password, name="myprofile-change-password"),
     path('chat/', chat_views.chat, name='chat'),
     path('chat/index.html', chat_views.chat_index, name='chat_index'),
+    path('stripe/', stripe_views.stripe, name='stripe'),
     path('userlist/', generic_views.UserListView.as_view(), name='userlist'),
     path('userprofile/<int:id>/',generic_views.user_profile,name='userprofile'),
 ]
