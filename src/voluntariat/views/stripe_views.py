@@ -1,7 +1,7 @@
 import stripe
 from django.shortcuts import render
 
-from src.PC import settings
+from django.conf import settings
 
 
 def stripe(request):
