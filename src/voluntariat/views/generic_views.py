@@ -120,8 +120,6 @@ def event_detail_view(request, pk):
                                                 event_id=pk)) == 0 and len(
         models.Event.objects.filter(organizer=request.user.id, pk=pk)) == 0 and models.Event.objects.filter(pk=pk)[0].can_add_participants is True:
         request.can_attend = 1
-    elif len(models.Participantion.objects.filter(voluntar_id=request.user.id, event_id=pk, blocked=True)) > 0:
-        request.can_attend = 5
     elif len(models.Participantion.objects.filter(voluntar_id=request.user.id,
                                                 event_id=pk)) == 0 and len(
         models.Event.objects.filter(organizer=request.user.id, id=pk)) == 0 and models.Event.objects.filter(id=pk)[0].can_add_participants is False:
@@ -153,8 +151,9 @@ def eventCreateView(request):
                 'channel_url': event.send_bird_channel_url,
                 'is_public': True,
             })
+            
             requests.post('https://api.sendbird.com/v3/group_channels', headers=headers, data=data)
-
+            
             # add the event manager to the channel
             data = json.dumps({'user_id': request.user.sendbird_user_id})
             requests.put('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/join', headers=headers, data=data)
@@ -410,26 +409,3 @@ def update_rate(request):
         participation.rating = value
         participation.save()
         return HttpResponse('ok')
-
-class MyUserListView(generic.ListView):
-    model = User
-    paginate_by = 10
-
-    def get_queryset(self):
-        query = self.request.GET.get("query", None)
-        list = models.Participantion.objects.filter(event=self.kwargs['pk']).exclude(voluntar=self.request.user.id)
-        list = list.exclude(blocked=True)
-        return list
-
-    context_object_name = 'my_user_list'
-    queryset = User.objects.all()
-    template_name = "voluntariat/myuserlist.html"
-
-def block_user(request, id):
-    participari = get_object_or_404(models.Participantion, id=id)
-    if request.method == "POST":
-        participari.blocked = True
-        participari.save()
-        return redirect(reverse('voluntariat:dashboard'))
-
-    return render(request, "voluntariat/block.html", {'participari': participari})

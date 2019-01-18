@@ -31,8 +31,5 @@ urlpatterns = [
     path('userprofile/<int:id>/',generic_views.user_profile,name='userprofile'),
     path('volunteers/', generic_views.volunteers_list, name='volunteers'),
     path('volunteers/<int:pk>/send/', generic_views.volunteer_send_email, name='volunteer-send'),
-    path('update_rate/',update_rate,name='update_rate'),
-    path('event/<int:pk>/list/', generic_views.MyUserListView.as_view(), name='event-list'),
-    path('block/<int:id>/', generic_views.block_user, name='event-block'),
-
+    path('update_rate/',update_rate,name='update_rate')
 ]
