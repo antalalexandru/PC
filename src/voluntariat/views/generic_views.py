@@ -90,7 +90,7 @@ def event_detail_view(request, pk):
                 participation.save()
                 return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
         else:
-            form = FeedbackForm({'comment': participation.feedback})
+            form = FeedbackForm(initial={'comment': participation.feedback})
         context['form'] = form
 
     context['participantions'] = participantions
