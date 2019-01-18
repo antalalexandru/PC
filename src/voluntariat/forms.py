@@ -18,6 +18,7 @@ class LoginForm(forms.Form):
 class EventForm(forms.ModelForm):
     start_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
     end_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
+    link = forms.CharField(label='link', max_length=250)
 
     class Meta:
         model = Event
@@ -75,3 +76,6 @@ class ChangePasswordForm(forms.Form):
         if not self.old_password_flag:
             raise forms.ValidationError("Parola veche pe care ai introdus-o este gresita.")
         return old_password
+
+class SendInfoForm(forms.Form):
+    message = forms.CharField(label='message', max_length=500)

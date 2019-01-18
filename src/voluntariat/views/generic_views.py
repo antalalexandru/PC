@@ -1,6 +1,6 @@
 import json
 import uuid
-
+from django.core.mail import EmailMessage
 import requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -10,7 +10,7 @@ from voluntariat import models
 from django.urls import reverse
 from django.views import generic
 from django.db.models import Q
-from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
+from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm, SendInfoForm
 from ..models import Event, User
 from django.db.models import Count
 
@@ -49,12 +49,13 @@ class UserListView(generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        query = self.request.GET.get("input",None)
+        query = self.request.GET.get("input", None)
         list = User.objects.exclude(first_name__exact='')
-        list =list.exclude(pk=self.request.user.pk)
+        list = list.exclude(pk=self.request.user.pk)
         if query is not None:
-            list= list.filter(Q(first_name__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
-        list=list.annotate(participari= Count('participations')).order_by('-participari')
+            list = list.filter(
+                Q(first_name__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
+        list = list.annotate(participari=Count('participations')).order_by('-participari')
         return list
 
     context_object_name = 'user_list'
@@ -68,17 +69,20 @@ class EventDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
-        if self.request.user.id is None and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
+        if self.request.user.id is None and models.Event.objects.filter(id=self.kwargs['pk'])[
+            0].can_add_participants is True:
             self.request.can_attend = 2
-        elif len(models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) != 0 :
+        elif len(models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) != 0:
             self.request.can_attend = 3
         elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
-                                                    event_id=self.kwargs['pk'])) == 0 and len(
-            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
+                                                      event_id=self.kwargs['pk'])) == 0 and len(
+            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and \
+                models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
             self.request.can_attend = 1
         elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
-                                                    event_id=self.kwargs['pk'])) == 0 and len(
-            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is False:
+                                                      event_id=self.kwargs['pk'])) == 0 and len(
+            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and \
+                models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is False:
             self.request.can_attend = 4
         else:
             # len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
@@ -111,7 +115,8 @@ def eventCreateView(request):
 
             # add the event manager to the channel
             data = json.dumps({'user_id': request.user.sendbird_user_id})
-            requests.put('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/join', headers=headers, data=data)
+            requests.put('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/join',
+                         headers=headers, data=data)
 
             # send create message
             data = json.dumps({
@@ -174,7 +179,8 @@ def event_attend_view(request, pk):
         # add user to channel
         headers = settings.API_TOKEN_CHAT
         data = json.dumps({'user_id': request.user.sendbird_user_id})
-        requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/join', headers=headers, data=data)
+        requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/join',
+                     headers=headers, data=data)
 
         # send welcome message
         data = json.dumps({
@@ -183,7 +189,7 @@ def event_attend_view(request, pk):
             'message': request.user.username + " joined the channel",
         })
         requests.post('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/messages',
-                     headers=headers, data=data)
+                      headers=headers, data=data)
 
         return redirect(reverse('voluntariat:dashboard'))
 
@@ -204,7 +210,8 @@ def event_unattend_view(request, pk):
         # remove user from channel
         headers = settings.API_TOKEN_CHAT
         data = json.dumps({'user_ids': [request.user.sendbird_user_id]})
-        requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/leave', headers=headers, data=data)
+        requests.put('https://api.sendbird.com/v3/group_channels/' + obj.send_bird_channel_url + '/leave',
+                     headers=headers, data=data)
 
         return redirect(reverse('voluntariat:dashboard'))
 
@@ -212,6 +219,7 @@ def event_unattend_view(request, pk):
         "event": obj
     }
     return render(request, "voluntariat/unattend.html", context)
+
 
 @login_required
 def event_stop_attendings_view(request, pk):
@@ -256,6 +264,7 @@ def my_profile(request):
 def user_profile(request, id):
     user = get_object_or_404(User, id=id)
     return render(request, 'voluntariat/userprofile.html', {'user': user})
+
 
 @login_required
 def my_profile_update(request):
@@ -323,3 +332,16 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
+
+
+def event_send_details(request, pk):
+    if request.method == "POST":
+        form = SendInfoForm(request.POST)
+        #if form.is_valid():
+        emails = list(Event.objects.get(pk=pk).participantion_set.filter().prefetch_related(
+            "voluntar").values_list("voluntar__email", flat=True))
+        message=str(form.data.get('message'))
+        msg = "Organizatorul evenimentului " + Event.objects.get(pk=pk).name + " doreste sa va comunice urmatoarele: \n"
+        email = EmailMessage('Informatii despre evenimentul la care participi', msg + " ' " + message + " ' ",to=emails)
+        email.send()
+    return redirect(reverse('voluntariat:dashboard'))

@@ -1,10 +1,9 @@
 import os
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -16,7 +15,6 @@ SECRET_KEY = 'h^a#c%ot&1lzqzufk+7i1glz79rok3w^tj5gxg3^%w64o_bg9n'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -33,7 +31,6 @@ INSTALLED_APPS = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,7 +62,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'PC.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -79,7 +75,6 @@ DATABASES = {
         'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -99,7 +94,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -113,7 +107,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
@@ -124,7 +117,21 @@ AUTH_USER_MODEL = 'voluntariat.User'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
 LOGIN_URL = '/login/'
 
 API_TOKEN_CHAT = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
+
+'''
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'echipagoat@gmail.com'
+EMAIL_HOST_PASSWORD = 'GOAT1234'
+'''
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'echipagoat@gmail.com'
+EMAIL_HOST_PASSWORD = 'GOAT1234'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

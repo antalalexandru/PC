@@ -17,6 +17,7 @@ urlpatterns = [
     path('event/<int:pk>/attend/', generic_views.event_attend_view, name='event-attend'),
     path('event/<int:pk>/unattend/', generic_views.event_unattend_view, name='event-unattend'),
     path('event/<int:pk>/stopAttendings/', generic_views.event_stop_attendings_view, name='event-stop-attendings'),
+    path('event/<int:pk>/sendinfo/',generic_views.event_send_details,name='sendinfo'),
     path('myprofile/', generic_views.my_profile, name='myprofile'),
     path('myprofile/update/', generic_views.my_profile_update, name="myprofile-update"),
     path('myprofile/changePassword/', generic_views.my_profile_change_password, name="myprofile-change-password"),
@@ -24,4 +25,5 @@ urlpatterns = [
     path('chat/index.html', chat_views.chat_index, name='chat_index'),
     path('userlist/', generic_views.UserListView.as_view(), name='userlist'),
     path('userprofile/<int:id>/',generic_views.user_profile,name='userprofile'),
+
 ]
