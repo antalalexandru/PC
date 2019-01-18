@@ -1,9 +1,15 @@
 {% extends "voluntariat/base_generic.html" %}
-
 {% block content %}
-<form action="." method="POST">{% csrf_token %}
-<h1>Trimiti invitatie pentru : "{{ user.first_name }}"</h1>
-<p><input type="submit" value="Da"> <a href="../">Renunt</a> </p>
-
+<form action="." method="POST">
+	{% csrf_token %}
+	<div class="card">
+		<div class="card-header">
+			Confirmare
+		</div>
+		<div class="card-body">
+			<h5 class="card-title">Trimiteţi invitaţie utilizatorului utilizatorului <em>{{ user.username }}</em> ?</h5>
+			<input type="submit" class="btn btn-info" value="Da"> <a class="btn btn-light" role="button" href="{% url 'voluntariat:dashboard' %}">Nu</a>
+		</div>
+	</div>
 </form>
 {% endblock %}

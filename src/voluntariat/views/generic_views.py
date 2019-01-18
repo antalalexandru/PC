@@ -98,6 +98,10 @@ def event_detail_view(request, pk):
 
     context['participantions'] = participantions
 
+    # context['can_post_review'] = request.user.pk not in list(map(lambda part : part.voluntar.id, participantions))
+
+    context['can_post_review'] = request.user.pk not in list(map(lambda part : part.voluntar.id, filter(lambda p : p.feedback, participantions)))
+
     if event.requested_donation == 0:
         request.donation_percentage = -1
     else:

@@ -1,22 +1,16 @@
 {% extends "voluntariat/base_generic.html" %}
-
 {% block content %}
-
-    <Br />
-
-    <form action="." method="POST">{% csrf_token %}
-
-    <div class="card">
-  <div class="card-header">
-    Confirmare
-  </div>
-  <div class="card-body">
-    <h5 class="card-title">Doreşti să anulezi participarea la evenimentul <em>{{ event.name }}</em>?</h5>
-    <input type="submit" class="btn btn-info" value="Da"> <a class="btn btn-light" role="button" href="../">Nu</a>
-  </div>
-</div>
-
+<br />
+<form action="." method="POST">
+	{% csrf_token %}
+	<div class="card">
+		<div class="card-header">
+			Confirmare
+		</div>
+		<div class="card-body">
+			<h5 class="card-title">Doreşti să anulezi participarea la evenimentul <em>{{ event.name }}</em>?</h5>
+			<input type="submit" class="btn btn-info" value="Da"> <a class="btn btn-light" role="button" href="../">Nu</a>
+		</div>
+	</div>
 </form>
-
-
 {% endblock %}
