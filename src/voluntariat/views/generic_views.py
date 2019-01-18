@@ -54,7 +54,7 @@ class UserListView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET.get("input",None)
         list = User.objects.exclude(first_name__exact='')
-        list =list.exclude(pk=self.request.user.pk)
+
         if query is not None:
             list= list.filter(Q(first_name__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
         list=list.annotate(participari= Count('participations')).order_by('-participari')
@@ -144,8 +144,9 @@ def eventCreateView(request):
                 'channel_url': event.send_bird_channel_url,
                 'is_public': True,
             })
+            
             requests.post('https://api.sendbird.com/v3/group_channels', headers=headers, data=data)
-
+            
             # add the event manager to the channel
             data = json.dumps({'user_id': request.user.sendbird_user_id})
             requests.put('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/join', headers=headers, data=data)
