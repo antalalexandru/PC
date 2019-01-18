@@ -3,13 +3,14 @@ import stripe
 import requests
 
 # Required for OAuth flow
+from django.urls import reverse
 from rauth import OAuth2Service
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.conf import settings
 
-from ..models import User
+from ..models import User, Event
 
 stripe.api_key = settings.API_TOKEN_STRIPE
 
@@ -53,6 +54,8 @@ def stripe_connect(request):
 def stripe_checkout(request):
     if request.method == "POST":
         token = request.POST.get("stripeToken")
+        event_id = int(request.POST.get("event_id"))
+        event = Event.objects.get(id=event_id)
 
     stripe.Charge.create(
         amount=999,
@@ -62,4 +65,7 @@ def stripe_checkout(request):
         stripe_account="acct_1Dr3OXJxau59OLf7",
     )
 
-    return render(request, 'voluntariat/stripe/checkout.html')
+    event.accumulated_donation += 10
+    event.save()
+
+    return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event_id}))

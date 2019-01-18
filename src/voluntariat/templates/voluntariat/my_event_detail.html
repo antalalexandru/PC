@@ -123,23 +123,26 @@
                             </div>
                         </li>
                         <li class="list-group-item" style="text-align: center">
-							 <form action="/checkout" method="POST">
-								 {% csrf_token %}
-								<script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-									data-key="pk_test_2PMnYRdbgNxtEzdyOlkHM66p"
-									data-amount="999"
-									data-name="GOAT"
-									data-description="Donează 10 lei către {{ event.name }}"
-									data-image="https://s3.amazonaws.com/stripe-uploads/acct_1Dr3U6I39GPtG9idapplication-logo-GOAT.png"
-									data-currency="ron"
-									data-panel-label="Donează {{amount}}"
-									data-email="{{ user.email }}"
-									data-label="Fii generos, donează!"
-									data-allow-remember-me="false">
-								</script>
-							 </form>
-                            <!--<a href="#" rel="noopener noreferrer" target="_blank" class="btn btn-light btn-block" role="button"><i class="far fa-money-bill-alt"></i> Donează</a>-->
-                        </li>
+							{% if event.organizer.stripe_client_id %}
+								 <form action="/checkout" method="POST">
+									 {% csrf_token %}
+									 <input type="hidden" id="event_id" name="event_id" value="{{ event.id }}">
+									<script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+										data-key="pk_test_2PMnYRdbgNxtEzdyOlkHM66p"
+										data-amount="999"
+										data-name="GOAT"
+										data-description="Donează 10 lei către {{ event.name }}"
+										data-image="https://s3.amazonaws.com/stripe-uploads/acct_1Dr3U6I39GPtG9idapplication-logo-GOAT.png"
+										data-currency="ron"
+										data-panel-label="Donează {{amount}}"
+										data-email="{{ user.email }}"
+										data-label="Fii generos, donează!"
+										data-allow-remember-me="false">
+									</script>
+								 </form>
+								<!--<a href="#" rel="noopener noreferrer" target="_blank" class="btn btn-light btn-block" role="button"><i class="far fa-money-bill-alt"></i> Donează</a>-->
+                       		{% endif %}
+						</li>
                     </ul>
 			    </div>
 		    </div>
