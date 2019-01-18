@@ -35,4 +35,8 @@ urlpatterns = [
     path('event/<int:pk>/list/', generic_views.MyUserListView.as_view(), name='event-list'),
     path('block/<int:id>/', generic_views.block_user, name='event-block'),
     path('event/<int:pk>/sendinfo/',generic_views.event_send_details,name='sendinfo'),
+    path('update_rate/',update_rate,name='update_rate'),
+    path('event/<int:pk>/list/', generic_views.MyUserListView.as_view(), name='event-list'),
+    path('block/<int:id>/', generic_views.block_user, name='event-block'),
+
 ]

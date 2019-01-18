@@ -155,6 +155,7 @@ def eventCreateView(request):
                 'channel_url': event.send_bird_channel_url,
                 'is_public': True,
             })
+            
             requests.post('https://api.sendbird.com/v3/group_channels', headers=headers, data=data)
 
             # add the event manager to the channel
@@ -415,6 +416,28 @@ def update_rate(request):
         participation.save()
         return HttpResponse('ok')
 
+class MyUserListView(generic.ListView):
+    model = User
+    paginate_by = 10
+
+    def get_queryset(self):
+        query = self.request.GET.get("query", None)
+        list = models.Participantion.objects.filter(event=self.kwargs['pk']).exclude(voluntar=self.request.user.id)
+        list = list.exclude(blocked=True)
+        return list
+
+    context_object_name = 'my_user_list'
+    queryset = User.objects.all()
+    template_name = "voluntariat/myuserlist.html"
+
+def block_user(request, id):
+    participari = get_object_or_404(models.Participantion, id=id)
+    if request.method == "POST":
+        participari.blocked = True
+        participari.save()
+        return redirect(reverse('voluntariat:dashboard'))
+
+    return render(request, "voluntariat/block.html", {'participari': participari})
 class MyUserListView(generic.ListView):
     model = User
     paginate_by = 10
