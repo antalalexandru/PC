@@ -1,8 +1,11 @@
 
 from django.urls import path
+
+from voluntariat.views.generic_views import update_rate
 from .views import generic_views, chat_views, stripe_views
 
 app_name = 'voluntariat'
+
 
 urlpatterns = [
     path('', generic_views.EventListView.as_view(), name='dashboard'),
@@ -11,7 +14,7 @@ urlpatterns = [
     path('logout/', generic_views.logout_view, name='logout'),
     path('myevents/', generic_views.MyEventListView.as_view(), name='myevents'),
     path('create/', generic_views.eventCreateView, name='create'),
-    path('event/<int:pk>/', generic_views.EventDetailView.as_view(), name='event-detail'),
+    path('event/<int:pk>/', generic_views.event_detail_view, name='event-detail'),
     path('event/<int:pk>/delete/', generic_views.event_delete_view, name='event-delete'),
     path('event/<int:pk>/update/', generic_views.event_update_view, name='event-update'),
     path('event/<int:pk>/attend/', generic_views.event_attend_view, name='event-attend'),
@@ -28,4 +31,5 @@ urlpatterns = [
     path('userprofile/<int:id>/',generic_views.user_profile,name='userprofile'),
     path('volunteers/', generic_views.volunteers_list, name='volunteers'),
     path('volunteers/<int:pk>/send/', generic_views.volunteer_send_email, name='volunteer-send'),
+    path('update_rate/',update_rate,name='update_rate')
 ]

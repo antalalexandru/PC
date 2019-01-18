@@ -77,3 +77,8 @@ class ChangePasswordForm(forms.Form):
         if not self.old_password_flag:
             raise forms.ValidationError("Parola veche pe care ai introdus-o este gresita.")
         return old_password
+
+
+class FeedbackForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea)
+
