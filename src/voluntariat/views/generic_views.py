@@ -345,7 +345,6 @@ def volunteers_list(request, q=None):
 
     query = q or request.GET.get('q')
     if query:
-        print("DAAAAAAAAAAAAAAA")
         user_list = user_list.filter(
             Q(last_name__icontains=query) |
             Q(first_name__icontains=query) |
