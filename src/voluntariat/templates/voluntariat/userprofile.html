@@ -37,10 +37,17 @@
 
       <hr><i class="fas fa-envelope"></i> {{ user.email }}
       <br>
-      <a href="https://connect.stripe.com/express/oauth/authorize?response_type=code&amp;client_id=ca_EJgsgjnw6cdnRhClSSsH0OBwlSj3d89n&amp;scope=read_write">
+      {% if not user.stripe_client_id %}
+          <a href="https://connect.stripe.com/oauth/authorize?response_type=code&amp;client_id=ca_EJgsgjnw6cdnRhClSSsH0OBwlSj3d89n&amp;scope=read_write">
+              <i class="far fa-credit-card"></i>
+              <span class="connect-button">Connect with Stripe</span>
+          </a>
+      {% endif %}
+
+      {% if user.stripe_client_id %}
           <i class="far fa-credit-card"></i>
-          <span class="connect-button">Connect with Stripe</span>
-      </a>
+          <span class="connect-button">Stripe Connected</span>
+      {% endif %}
 
   </div>
 
