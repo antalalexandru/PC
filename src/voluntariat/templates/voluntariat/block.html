@@ -1,0 +1,19 @@
+{% extends "voluntariat/base_generic.html" %}
+
+{% block content %}
+
+    <br />
+<form action="." method="POST">
+	{% csrf_token %}
+	<div class="card">
+		<div class="card-header">
+			Confirmare
+		</div>
+		<div class="card-body">
+			<h5 class="card-title">Doriţi să îl blocaţi pe voluntarul {{ participari.voluntar.first_name }} {{ participari.voluntar.last_name }} ({{ participari.voluntar.username }})?</h5>
+			<input type="submit" class="btn btn-info" value="Da"> <a class="btn btn-light" role="button" href="{% url 'voluntariat:event-list' participari.event.id %}">Nu</a>
+		</div>
+	</div>
+</form>
+
+{% endblock %}
