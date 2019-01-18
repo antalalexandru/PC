@@ -43,7 +43,7 @@ def event_instance_attendings(user_instance):
     uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
     date = datetime.now()
 
-    return Event.objects.create(name='Denisa', picture=uploaded, location='Cluj', description='Cluj',\
+    return Event.objects.create(name='Denis', picture=uploaded, location='Cluj', description='Cluj',\
                                 benefits='Cluj', start_date=date, end_date=date, organizer=user_instance, can_add_participants=True)
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def event_instance_noattendings(user_instance):
     uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
     date = datetime.now()
 
-    return Event.objects.create(name='Denisa', picture=uploaded, location='Cluj', description='Cluj',\
+    return Event.objects.create(name='Denis', picture=uploaded, location='Cluj', description='Cluj',\
                                 benefits='Cluj', start_date=date, end_date=date, organizer=user_instance, can_add_participants=False)
 
 @pytest.fixture
@@ -70,7 +70,7 @@ def event(request, db):
     date = datetime.now()
 
     data = {'name': 'Denis', 'picture': uploaded, 'location': 'Cluj'
-        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date}
+        , 'description': 'Cluj', 'benefits': 'Cluj','requested_donation':0, 'start_date': date, 'end_date': date,'requested_donation':0}
 
     return data
 
@@ -86,7 +86,7 @@ def event2(request, db):
     date = datetime.now()
 
     data = {'name': 'Bla', 'picture': uploaded, 'location': 'Cluj'
-        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date}
+        , 'description': 'Cluj', 'benefits': 'Cluj','start_date': date, 'end_date': date,'requested_donation':0}
 
     return data
 
@@ -102,7 +102,7 @@ def event3(request, db):
     date = datetime.now()
 
     data = {'name': 'Roland', 'picture': uploaded, 'location': 'Cluj'
-        , 'description': 'Cluj', 'benefits': 'Cluj', 'start_date': date, 'end_date': date}
+        , 'description': 'Cluj', 'benefits': 'Cluj','start_date': date, 'end_date': date,'requested_donation':0}
 
     return data
 
@@ -110,12 +110,13 @@ def event3(request, db):
 def test_add(client, event, db):
     username = "user1"
     password = "bar"
-    User.objects.create_user(username=username, password=password)
+    User.objects.create_user(username=username,email='user1@gmail.com',age=18, password=password)
+
     client.login(username=username, password=password)
     resp = client.post(reverse('voluntariat:create'), event)
-    assert Event.objects.filter(name='Denis').exists()
-
+    assert Event.objects.count() == 1 ;
     assert (resp.status_code == 302)
+
     resp1 = client.get(reverse('voluntariat:dashboard'))
 
     assert len(resp1.context['my_event_list']) == 1
@@ -136,7 +137,7 @@ def test_add_fail(client, db):
     assert len(resp1.context['my_event_list']) == 0
 
 
-def test_delete(client, event, db):
+def test_delete(client, user_instance,event, db):
     username = "user1"
     password = "bar"
     User.objects.create_user(username=username, password=password)
@@ -285,14 +286,14 @@ def test_close_attendings(client, user_instance, event_instance_attendings):
 
     response = client.post(reverse('voluntariat:event-stop-attendings', kwargs={'pk': event_instance_attendings.pk}))
     assert (response.status_code == 302)
-    assert (Event.objects.filter(name='Denisa').exists() == True)
-    assert (Event.objects.filter(name='Denisa')[0].can_add_participants == False)
+    assert (Event.objects.filter(name='Denis').exists() == True)
+    assert (Event.objects.filter(name='Denis')[0].can_add_participants == False)
     client.logout()
 
 def test_close_attendings_fail( client, user_instance, event_instance_attendings):
     client.force_login(user_instance)
     resp = client.get(reverse('voluntariat:event-stop-attendings', kwargs={'pk': event_instance_attendings.pk}))
-    assert (Event.objects.filter(name='Denisa')[0].can_add_participants == True)
+    assert (Event.objects.filter(name='Denis')[0].can_add_participants == True)
     client.logout()
 
 def test_close_attendings_event(client, event_instance_noattendings,user_instance2):
