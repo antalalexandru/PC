@@ -1,39 +1,234 @@
 {% extends "voluntariat/base_generic.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
-    <h1>Title: {{ event.name }}</h1>
-    <img src="{{ event.picture.url }}"/>
-
-    <p><strong>Summary:</strong> {{ event.description }}</p>
-    <p><strong>Benefits:</strong> {{ event.benefits }}</p>
-    <p><strong>Start Date:</strong> {{ event.start_date }}</p>
-    <p><strong>End date:</strong> {{ event.end_date }}</p>
-    {% if event.organizer == request.user %}
-        <a href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
-        <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
-        {% if event.can_add_participants == True %}
-            <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
-        {% endif %}
-
-    {% endif %}
-
-
-    <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
-
-    {% if request.can_attend == 1 %}
-        <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
-    {% endif %}
-    {% if request.can_attend == 0 %}
-        <a  href="{% url 'voluntariat:event-unattend' event.id %}">Unattend</a>
-    {% endif %}
-     {% if request.can_attend == 2 %}
-       <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
-    {% endif %}
-      {% if request.can_attend == 3 %}
-       <p>Sunteti organizatorul acestui eveniment</p>
-    {% endif %}
-    {% if request.can_attend == 4 %}
-       <p>La acest eveniment nu se mai fac inscrieri</p>
-    {% endif %}
-
+<!-- <h1>Title: {{ event.name }}</h1>
+	<img src="{{ event.picture.url }}"/>
+	<p><strong>Summary:</strong> {{ event.description }}</p>
+	<p><strong>Benefits:</strong> {{ event.benefits }}</p>
+	<p><strong>Start Date:</strong> {{ event.start_date }}</p>
+	<p><strong>End date:</strong> {{ event.end_date }}</p>
+	{% if event.organizer == request.user %}
+	    <a href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
+	    <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
+	    {% if event.can_add_participants == True %}
+	        <a href="{% url 'voluntariat:event-stop-attendings' event.id %}">Opreste inscrierile</a>
+	    {% endif %}
+	{% endif %}
+	<a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
+	{% if request.can_attend == 1 %}
+	    <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
+	{% endif %}
+	{% if request.can_attend == 0 %}
+	    <a  href="{% url 'voluntariat:event-unattend' event.id %}">Unattend</a>
+	{% endif %}
+	 {% if request.can_attend == 2 %}
+	   <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
+	{% endif %}
+	  {% if request.can_attend == 3 %}
+	   <p>Sunteti organizatorul acestui eveniment</p>
+	{% endif %}
+	{% if request.can_attend == 4 %}
+	   <p>La acest eveniment nu se mai fac inscrieri</p>
+	{% endif %}
+	-->
+<div class="row">
+	<!-- Post Content Column -->
+	<div class="col-lg-8">
+		<!-- Title -->
+		<h1 class="mt-4">{{ event.name }}</h1>
+		<!-- Author -->
+		<p class="lead">
+			organizat de
+			<a href="{% url 'voluntariat:userprofile' event.organizer.id %}">{{ event.organizer.username }}</a>
+		</p>
+		<hr>
+		<!-- Preview Image -->
+		<img class="img-fluid rounded" src="{{ event.picture.url }}" alt="">
+		<hr>
+		<p>
+		<h3>Descriere</h3>
+		</p>
+		<p>{{ event.description }}</p>
+		<hr>
+		<p>
+		<h3>Beneficii</h3>
+		</p>
+		<p>{{ event.benefits }}</p>
+		{% if not event.can_add_participants %}
+		<hr>
+		<p>
+		<div class="rating" data-rate-value=6 style="float: right"></div>
+		<h3>Feedback</h3>
+		</p>
+		{% if is_participant and can_post_review %}
+		<style>
+			textarea {
+			max-height: 100px;
+			}
+		</style>
+		<form method="POST">
+			{% csrf_token %}
+			<div class="card my-4">
+				<h5 class="card-header">Formular feedback</h5>
+				<div class="card-body">
+					{{ form |crispy}}
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+		</form>
+		{% endif %}
+		{% for part in participantions %}
+		{% if part.feedback %}
+		<div class="media mb-4">
+			<img src="{{ part.voluntar.picture.url }}" class="d-flex mr-3 img-fluid" alt="..." style="max-width: 50px; border-radius: 3px;"/>
+			<div class="media-body">
+				<h5 class="mt-0">{{ part.voluntar.username }}</h5>
+				{{ part.feedback }}
+			</div>
+		</div>
+		{% endif %}
+		{% endfor %}
+		{% endif %}
+	</div>
+	<!-- Sidebar Widgets Column -->
+	<div class="col-md-4">
+		{% if event.organizer == request.user %}
+		<p>
+		<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle btn-block" type="button" id="dropdownMenuButton"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Opţiuni
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<a class="dropdown-item" href="{% url 'voluntariat:event-update' event.id %}"><i
+					class="fas fa-pencil-alt"></i> Editează</a>
+				{% if event.can_add_participants == True %}
+				<a class="dropdown-item" href="{% url 'voluntariat:event-stop-attendings' event.id %}"><i
+					class="fas fa-minus-circle"></i> Opreşte înscrierile</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="{% url 'voluntariat:volunteers' %}"><i class="fas fa-mail-bulk"></i>
+				Trimite invitaţii de participare</a>
+				{% endif %}
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="{% url 'voluntariat:event-delete' event.id %}"
+					style="color: #cc0000"><i class="fas fa-times-circle"></i> Şterge eveniment</a>
+			</div>
+		</div>
+		</p>
+		{% endif %}
+		<p>
+		<div>
+			{% if request.can_attend == 1 %}
+			<a href="{% url 'voluntariat:event-attend' event.id %}" class="btn btn-primary btn-block"
+				role="button"><i class="fas fa-user-plus"></i> Înscriere eveniment</a>
+			{% endif %}
+			{% if request.can_attend == 0 %}
+			<a href="{% url 'voluntariat:event-unattend' event.id %}" class="btn btn-warning btn-block"
+				role="button"><i class="fas fa-user-minus"></i> Renunţare participare</a>
+			{% endif %}
+			{% if request.can_attend == 2 %}
+			<button type="button" class="btn btn-outline-danger btn-block" disabled>Autentificare necesară
+			pentru participare
+			</button>
+			{% endif %}
+			{% if request.can_attend == 4 %}
+			<button type="button" class="btn btn-outline-danger btn-block" disabled>La acest eveniment nu se mai
+			fac înscrieri
+			</button>
+			{% endif %}
+		</div>
+		</p>
+		<!-- Side Widget -->
+		<div class="card my-4">
+			<h5 class="card-header">Detalii</h5>
+			<div class="card-body" style="padding: 5px;">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Locaţie: {{ event.location }}
+					</li>
+					<li class="list-group-item"><i class="far fa-calendar-check"></i> Data
+						început: {{ event.start_date|date:"j M Y, H:i" }}
+					</li>
+					<li class="list-group-item"><i class="far fa-calendar-times"></i> Data
+						sfârşit: {{ event.end_date|date:"j M Y, H:i" }}
+					</li>
+				</ul>
+			</div>
+		</div>
+		<p>
+			<a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}"
+				rel="noopener noreferrer" target="_blank" class="btn btn-info btn-block" role="button"><i
+				class="fas fa-comments"></i> Chat eveniment</a>
+		</p>
+		{% if event.requested_donation > 0 %}
+		<div class="card my-4">
+			<h5 class="card-header"><i class="far fa-credit-card"></i> Donaţii</h5>
+			<div class="card-body" style="padding: 5px;">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+						Suma stransă: {{ event.accumulated_donation }} RON
+						/ {{ event.requested_donation }} RON
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped progress-bar-animated"
+								role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
+								style="width: {{ request.donation_percentage }}%"></div>
+						</div>
+					</li>
+					<li class="list-group-item" style="text-align: center">
+						{% if event.organizer.stripe_client_id %}
+						<form action="/checkout" method="POST">
+							{% csrf_token %}
+							<input type="hidden" id="event_id" name="event_id" value="{{ event.id }}">
+							<script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+								data-key="pk_test_2PMnYRdbgNxtEzdyOlkHM66p"
+								data-amount="999"
+								data-name="GOAT"
+								data-description="Donează 10 lei către {{ event.name }}"
+								data-image="https://s3.amazonaws.com/stripe-uploads/acct_1Dr3U6I39GPtG9idapplication-logo-GOAT.png"
+								data-currency="ron"
+								data-panel-label="Donează {{ amount }}"
+								data-email="{{ user.email }}"
+								data-label="Fii generos, donează!"
+								data-allow-remember-me="false"></script>
+						</form>
+						<!--<a href="#" rel="noopener noreferrer" target="_blank" class="btn btn-light btn-block" role="button"><i class="far fa-money-bill-alt"></i> Donează</a>-->
+						{% endif %}
+					</li>
+				</ul>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+<script>
+	var is_participant =
+	{{ is_participant }}
+	var event_id =
+	{{ event.pk }}
+	if (is_participant > 0) {
+	    var user_id =
+	    {{ user.pk }}
+	}
+	$(document).ready(function () {
+	    function makeXHR(url, method, data) {
+	        return $.ajax({
+	            url: url,
+	            type: method,
+	            data: data,
+	            dataType: "json"
+	        });
+	    }
+	    $(".rating").rate();
+	    $(".rating").rate("setValue", {{ medie }});
+	    if (is_participant > 0) {
+	        $(".rating").on("change", function (ev, data) {
+	            makeXHR("/update_rate/", "POST", {'value': data.to, 'pk': event_id, 'pk2': user_id})
+	        });
+	    } else {
+	        $(".rating").on("change", function (ev, data) {
+	            $(".rating").rate("setValue", {{ medie }});
+	        });
+	    }
+	})
+</script>
+<!-- /.row -->
 {% endblock %}

@@ -5,15 +5,21 @@ import requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.csrf import csrf_exempt
+
 from voluntariat import models
 from django.urls import reverse
 from django.views import generic
 from django.db.models import Q
-from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm
-from ..models import Event, User
+from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm, FeedbackForm
+from ..models import Event, User, Participantion
 from django.db.models import Count
 
+from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 class EventListView(generic.ListView):
     model = Event
@@ -51,7 +57,7 @@ class UserListView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET.get("input",None)
         list = User.objects.exclude(first_name__exact='')
-        list =list.exclude(pk=self.request.user.pk)
+
         if query is not None:
             list= list.filter(Q(first_name__icontains=query) | Q(first_name__icontains=query) | Q(email__icontains=query))
         list=list.annotate(participari= Count('participations')).order_by('-participari')
@@ -62,31 +68,69 @@ class UserListView(generic.ListView):
     template_name = "voluntariat/userlist.html"
 
 
-class EventDetailView(generic.DetailView):
-    model = Event
+def event_detail_view(request, pk):
     template_name = "voluntariat/my_event_detail.html"
+    event = get_object_or_404(Event, pk=pk)
+    context={}
+    context['event'] = event
+    is_participant = len(Participantion.objects.filter(voluntar=request.user.pk, event=event))
+    context['is_participant'] =  is_participant
+    # context['form'] = FeedbackForm()
+    medie = 0
+    participantions = Participantion.objects.filter(event=event)
+    for part in participantions:
+        medie += part.rating
+    if len(participantions):
+        medie = medie / len(participantions)
 
-    def get_context_data(self, **kwargs):
-        context = super(EventDetailView, self).get_context_data(**kwargs)
-        if self.request.user.id is None and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
-            self.request.can_attend = 2
-        elif len(models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) != 0 :
-            self.request.can_attend = 3
-        elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
-                                                    event_id=self.kwargs['pk'])) == 0 and len(
-            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is True:
-            self.request.can_attend = 1
-        elif len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
-                                                    event_id=self.kwargs['pk'])) == 0 and len(
-            models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0 and models.Event.objects.filter(id=self.kwargs['pk'])[0].can_add_participants is False:
-            self.request.can_attend = 4
+    context['medie'] = medie
+    if is_participant:
+        participation = Participantion.objects.get(event=event.pk, voluntar=request.user.pk)
+        if request.method == "POST":
+            form = FeedbackForm(request.POST)
+            if form.is_valid():
+                participation.feedback = form.cleaned_data['comment']
+                participation.save()
+                return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
         else:
-            # len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
-            #                                           event_id=self.kwargs['pk'])) != 0 and len(
-            # models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0:
-            self.request.can_attend = 0
+            form = FeedbackForm(initial={'comment': participation.feedback})
+        context['form'] = form
 
-        return context
+    context['participantions'] = participantions
+
+    # context['can_post_review'] = request.user.pk not in list(map(lambda part : part.voluntar.id, participantions))
+
+    context['can_post_review'] = request.user.pk not in list(map(lambda part : part.voluntar.id, filter(lambda p : p.feedback, participantions)))
+
+    if event.requested_donation == 0:
+        request.donation_percentage = -1
+    else:
+        donation_percentage = event.accumulated_donation / event.requested_donation
+        if donation_percentage >= 1:
+            donation_percentage = 100
+        else:
+            donation_percentage *= 100
+        request.donation_percentage = donation_percentage
+
+    if request.user.id is None and models.Event.objects.filter(id=pk)[0].can_add_participants is True:
+        request.can_attend = 2
+    elif len(models.Event.objects.filter(organizer=request.user.id, id=pk)) != 0 :
+        request.can_attend = 3
+    elif len(models.Participantion.objects.filter(voluntar_id=request.user.id,
+                                                event_id=pk)) == 0 and len(
+        models.Event.objects.filter(organizer=request.user.id, pk=pk)) == 0 and models.Event.objects.filter(pk=pk)[0].can_add_participants is True:
+        request.can_attend = 1
+    elif len(models.Participantion.objects.filter(voluntar_id=request.user.id,
+                                                event_id=pk)) == 0 and len(
+        models.Event.objects.filter(organizer=request.user.id, id=pk)) == 0 and models.Event.objects.filter(id=pk)[0].can_add_participants is False:
+        request.can_attend = 4
+    else:
+        # len(models.Participantion.objects.filter(voluntar_id=self.request.user.id,
+        #                                           event_id=self.kwargs['pk'])) != 0 and len(
+        # models.Event.objects.filter(organizer=self.request.user.id, id=self.kwargs['pk'])) == 0:
+        request.can_attend = 0
+
+    return render(request, template_name, context)
 
 
 def eventCreateView(request):
@@ -107,8 +151,9 @@ def eventCreateView(request):
                 'channel_url': event.send_bird_channel_url,
                 'is_public': True,
             })
+            
             requests.post('https://api.sendbird.com/v3/group_channels', headers=headers, data=data)
-
+            
             # add the event manager to the channel
             data = json.dumps({'user_id': request.user.sendbird_user_id})
             requests.put('https://api.sendbird.com/v3/group_channels/' + event.send_bird_channel_url + '/join', headers=headers, data=data)
@@ -319,7 +364,48 @@ def signup(request):
 
     return render(request, 'voluntariat/signup.html', {'form': form})
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
+
+def volunteers_list(request, q=None):
+    user_list = User.objects.all()
+
+    query = q or request.GET.get('q')
+    if query:
+        user_list = user_list.filter(
+            Q(last_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(username__icontains=query)
+        ).distinct()
+
+    paginator = Paginator(user_list, 2)
+
+    page = request.GET.get('page')
+    users = paginator.get_page(page)
+
+    if query :
+        return render(request, 'voluntariat/volunteerslist.html', context={'users': users, 'q': query})
+    else:
+        return render(request, 'voluntariat/volunteerslist.html', context={'users': users})
+
+
+def volunteer_send_email(request, pk):
+    obj = User.objects.get(pk=pk)
+    if request.method == "POST":
+        email = EmailMessage('Invitatie', 'Invitatie pentru urmatorul eveniment: linkattend', to=[obj.email])
+        email.send()
+        return redirect(reverse('voluntariat:volunteers'))
+    context = {"user": obj}
+    return render(request, "voluntariat/send_em.html", context)
+@csrf_exempt
+def update_rate(request):
+    if request.method == 'POST':
+        value= request.POST.get('value')
+        pk = request.POST.get('pk')
+        pk2 = request.POST.get('pk2')
+        participation = Participantion.objects.get(event=pk, voluntar=pk2)
+        participation.rating = value
+        participation.save()
+        return HttpResponse('ok')

@@ -1,3 +1,4 @@
+from bootstrap_datepicker_plus import DateTimePickerInput, DatePickerInput
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
@@ -11,17 +12,18 @@ class SignUpForm(UserCreationForm):
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label='username', max_length=250)
-    password = forms.CharField(max_length=32, widget=forms.PasswordInput)
+    username = forms.CharField(label='Utilizator', max_length=250)
+    password = forms.CharField(label='Parola', max_length=32, widget=forms.PasswordInput)
 
 
 class EventForm(forms.ModelForm):
-    start_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
-    end_date = forms.DateTimeField(widget=forms.TextInput(attrs={"placeholder": "yyyy-mm-dd hh:mm"}))
-
     class Meta:
         model = Event
-        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date')
+        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date', 'requested_donation')
+        widgets = {
+            'start_date': DateTimePickerInput(format='%Y-%m-%d %H:%M'),
+            'end_date': DateTimePickerInput(format='%Y-%m-%d %H:%M'),
+        }
 
 
 class UserForm(forms.ModelForm):
@@ -75,3 +77,8 @@ class ChangePasswordForm(forms.Form):
         if not self.old_password_flag:
             raise forms.ValidationError("Parola veche pe care ai introdus-o este gresita.")
         return old_password
+
+
+class FeedbackForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea)
+

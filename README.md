@@ -88,6 +88,12 @@ easy_install psycopg2.exe # .exe-ul este in rootul proiectului nostru
 pip install django-crispy-forms
 ```
 
+## DateTimePicker
+
+```
+pip install django-bootstrap-datepicker-plus
+```
+
 ## Deployment
 
 For now:

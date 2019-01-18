@@ -19,6 +19,9 @@ class Event(models.Model):
     send_bird_channel_url = models.CharField(max_length=100, default='default')
     can_add_participants = models.BooleanField(default=True)
 
+    requested_donation = models.PositiveIntegerField(default=0)
+    accumulated_donation = models.PositiveIntegerField(default=0)
+
     def get_absolute_url(self):
         return reverse('voluntariat:event-detail', args=[str(self.id)])
 
@@ -42,8 +45,8 @@ class User(AbstractUser):
 class Participantion(models.Model):
     voluntar = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    feedback = models.TextField()
+    rating = models.FloatField()
+    feedback = models.TextField(null=True)
 
 
 class Donation(models.Model):
@@ -51,3 +54,5 @@ class Donation(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     amount = models.FloatField()
     stripe_charge_id = models.CharField(max_length=1000)
+
+

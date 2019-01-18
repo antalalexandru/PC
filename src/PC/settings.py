@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'voluntariat',
     'crispy_forms',
+    'bootstrap_datepicker_plus'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -124,6 +125,15 @@ MEDIA_URL = '/media/'
 
 LOGIN_URL = '/login/'
 
+
 django_heroku.settings(locals())
 API_TOKEN_CHAT = {'Api-Token': '014a96a3f38702c4048e74fd4458b54c801553ed'}
 
+API_TOKEN_STRIPE = 'sk_test_Y1Y4cn7TCAHalUxXBS0EEln7'
+CLIENT_TOKEN_STRIPE = 'ca_EJgsgjnw6cdnRhClSSsH0OBwlSj3d89n'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'echipagoat@gmail.com'
+EMAIL_HOST_PASSWORD = 'GOAT1234'

@@ -1,0 +1,13 @@
+{% extends "voluntariat/base_generic.html" %}
+{% block content %}
+<br>
+<h1>Stripe</h1>
+<p>Stripe account successfully connected. You can begin accepting donations.</p>
+<br><br>
+<div style="text-align: center;">
+    <img class="card-img-top" alt="Card image cap" style="max-width: 220px;" src="{{ user.picture.url }}">
+    <br><br>
+    <h3>{{ user.last_name }} {{ user.first_name }}</h3>
+    <h4><small class="text-muted">{{ user.username }}</small></h4>
+</div>
+{% endblock %}

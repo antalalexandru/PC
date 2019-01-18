@@ -11,3 +11,6 @@ gunicorn
 django-heroku
 dj-database-url
 requests
+stripe
+django-bootstrap-datepicker-plus
+rauth
