@@ -267,7 +267,7 @@ def test_can_attend_event(client,  event_instance,user_instance2):
     client.logout()
 
 def test_can_unattend_event(client,  event_instance,user_instance2):
-    participation = Participantion(voluntar=user_instance2, event=event_instance, rating=1, feedback='', blocked=False)
+    participation = Participantion(voluntar=user_instance2, event=event_instance, rating=1, feedback='')
     participation.save()
     client.force_login(user_instance2)
     resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
@@ -300,52 +300,4 @@ def test_close_attendings_event(client, event_instance_noattendings,user_instanc
     client.force_login(user_instance2)
     resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance_noattendings.pk}))
     assert b'La acest eveniment nu se mai fac inscrieri' in resp.content
-    client.logout()
-
-@pytest.fixture
-def participation_instance(user_instance2, event_instance):
-    return Participantion.objects.create(voluntar=user_instance2, event=event_instance, rating=1, feedback='',
-                                         blocked=False)
-
-def test_blocked_event(client, event_instance, user_instance2):
-    participation = Participantion(voluntar=user_instance2, event=event_instance, rating=1, feedback='', blocked=True)
-    participation.save()
-    client.force_login(user_instance2)
-    resp = client.get(reverse('voluntariat:event-detail', kwargs={'pk': event_instance.pk}))
-    assert b'Nu puteti participa la acest eveniment' in resp.content
-    client.logout()
-
-def test_my_user_list(client, user_instance, event_instance):
-    client.force_login(user_instance)
-    resp = client.get(reverse('voluntariat:event-list', kwargs={'pk': event_instance.pk}))
-    assert len(resp.context['my_user_list']) == 0
-    client.logout()
-
-
-def test_block_user(client, user_instance, event_instance, user_instance2):
-    participation = Participantion(voluntar=user_instance2, event=event_instance, rating=1, feedback='', blocked=False)
-    participation.save()
-    client.force_login(user_instance)
-
-    assert participation.blocked is False
-    resp = client.get(reverse('voluntariat:event-block', kwargs={'id': participation.id}))
-    assert resp.status_code == 200
-    client.logout()
-
-
-def test_block_user_fail(client, user_instance, event_instance, user_instance2):
-    client.force_login(user_instance)
-    resp = client.get(reverse('voluntariat:event-block', kwargs={'id': 1000}))
-    assert resp.status_code == 404
-    client.logout()
-
-
-def test_block_the_user(client, user_instance, event_instance, user_instance2):
-    client.force_login(user_instance)
-    participation = Participantion(voluntar=user_instance2, event=event_instance, rating=1, feedback='', blocked=False)
-    participation.save()
-
-    client.post(reverse('voluntariat:event-block', kwargs={'id': participation.id}))
-    participation = Participantion.objects.filter(voluntar=user_instance2, event=event_instance).values('blocked')
-    assert participation is not None
     client.logout()

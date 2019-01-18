@@ -47,7 +47,6 @@ class Participantion(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     rating = models.FloatField()
     feedback = models.TextField(null=True)
-    blocked = models.BooleanField(default=False)
 
 
 class Donation(models.Model):
