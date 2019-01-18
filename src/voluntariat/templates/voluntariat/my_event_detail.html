@@ -104,6 +104,9 @@
 					class="fas fa-pencil-alt"></i> Editează</a>
                 <a class="dropdown-item" href="{% url 'voluntariat:event-list' event.id %}"><i class="fas fa-users-cog"></i>
 				Gestionează voluntari înscrişi</a>
+                <a class="dropdown-item" href="{% url 'voluntariat:sendinfo' event.id %}"><i class="far fa-comment-alt"></i>
+				Trimite mesaj la voluntarii înscrişi</a>
+
 				{% if event.can_add_participants == True %}
 				<a class="dropdown-item" href="{% url 'voluntariat:event-stop-attendings' event.id %}"><i
 					class="fas fa-minus-circle"></i> Opreşte înscrierile</a>

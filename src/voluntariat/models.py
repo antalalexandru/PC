@@ -22,6 +22,8 @@ class Event(models.Model):
     requested_donation = models.PositiveIntegerField(default=0)
     accumulated_donation = models.PositiveIntegerField(default=0)
 
+    google_doc_url = models.URLField(null=True)
+
     def get_absolute_url(self):
         return reverse('voluntariat:event-detail', args=[str(self.id)])
 

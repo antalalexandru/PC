@@ -9,6 +9,11 @@
 		</div>
 		<div class="card-body">
 			<h5 class="card-title">Doreşti să te înscrii la evenimentul <em>{{ event.name }}</em>?</h5>
+
+            {% if event.google_doc_url %}
+                <a href="{{event.google_doc_url}}">Te rog completează acest formular</a>
+            {% endif%}
+
 			<input type="submit" class="btn btn-info" value="Da"> <a class="btn btn-light" role="button" href="../">Anulează</a>
 		</div>
 	</div>
