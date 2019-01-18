@@ -14,6 +14,9 @@ from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordFo
 from ..models import Event, User
 from django.db.models import Count
 
+from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 class EventListView(generic.ListView):
     model = Event
@@ -336,3 +339,35 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect('voluntariat:dashboard')
+
+def volunteers_list(request, q=None):
+    user_list = User.objects.all()
+
+    query = q or request.GET.get('q')
+    if query:
+        print("DAAAAAAAAAAAAAAA")
+        user_list = user_list.filter(
+            Q(last_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(username__icontains=query)
+        ).distinct()
+
+    paginator = Paginator(user_list, 2)
+
+    page = request.GET.get('page')
+    users = paginator.get_page(page)
+
+    if query :
+        return render(request, 'voluntariat/volunteerslist.html', context={'users': users, 'q': query})
+    else:
+        return render(request, 'voluntariat/volunteerslist.html', context={'users': users})
+
+
+def volunteer_send_email(request, pk):
+    obj = User.objects.get(pk=pk)
+    if request.method == "POST":
+        email = EmailMessage('Invitatie', 'Invitatie pentru urmatorul eveniment: linkattend', to=[obj.email])
+        email.send()
+        return redirect(reverse('voluntariat:volunteers'))
+    context = {"user": obj}
+    return render(request, "voluntariat/send_em.html", context)

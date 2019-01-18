@@ -26,4 +26,6 @@ urlpatterns = [
     path('checkout', stripe_views.stripe_checkout, name='checkout'),
     path('userlist/', generic_views.UserListView.as_view(), name='userlist'),
     path('userprofile/<int:id>/',generic_views.user_profile,name='userprofile'),
+    path('volunteers/', generic_views.volunteers_list, name='volunteers'),
+    path('volunteers/<int:pk>/send/', generic_views.volunteer_send_email, name='volunteer-send'),
 ]

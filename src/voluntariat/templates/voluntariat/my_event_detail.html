@@ -71,8 +71,12 @@
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 				<a class="dropdown-item" href="{% url 'voluntariat:event-update' event.id %}"><i class="fas fa-pencil-alt"></i> Editează</a>
 				{% if event.can_add_participants == True %}
-				<a class="dropdown-item" href="{% url 'voluntariat:event-stop-attendings' event.id %}"><i class="fas fa-minus-circle"></i> Opreşte înscrierile</a>
-				{% endif %}
+                    <a class="dropdown-item" href="{% url 'voluntariat:event-stop-attendings' event.id %}"><i class="fas fa-minus-circle"></i> Opreşte înscrierile</a>
+                    <div class="dropdown-divider"></div>
+
+                    <a class="dropdown-item" href="{% url 'voluntariat:volunteers' %}"><i class="fas fa-mail-bulk"></i> Trimite invitaţii de participare</a>
+
+                {% endif %}
 				<div class="dropdown-divider"></div>
 				<a class="dropdown-item" href="{% url 'voluntariat:event-delete' event.id %}" style="color: #cc0000"><i class="fas fa-times-circle"></i> Şterge eveniment</a>
 			</div>

@@ -1,0 +1,86 @@
+{% extends "voluntariat/base_generic.html" %}
+{% block content %}
+<p><h1>Volunteers List</h1></p>
+<div>
+    <form class="navbar-form navbar-left" role="search" method="get" action="{% url 'voluntariat:volunteers'%}">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-10">
+                    <input type="text" class="form-control" name="q" value="{{ request.GET.q }}"
+                           placeholder="Introduce text....">
+                </div>
+                <div class="col=2">
+                    <button type="submit" class="btn btn-info">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% if users %}
+<!-- <ul class="list-group" style="list-style-type:none">
+    {% for user in users %}
+    <li style=" border-left: 3px cornflowerblue; background-color: lightblue;">
+        {{user.first_name}} {{user.last_name}} <a href="{% url 'voluntariat:volunteer-send' user.id %}">Invite</a>
+        <br/>
+    </li>
+    {% endfor %}
+
+</ul> -->
+
+    <ul class="list-group list-group-flush">
+
+          {% for user in users %}
+              <li class="list-group-item">
+                  {{user.id}}. {{user.first_name}} {{user.last_name}} ({{ user.username }}) &nbsp;
+                  <a href="{% url 'voluntariat:volunteer-send' user.id %}" class="btn btn-light" role="button"><i class="fas fa-envelope"></i> Trimite invitaţie</a>
+
+
+              </li>
+          {% endfor %}
+
+          </ul>
+
+
+{% else %}
+<p>There are no volunteers in the library.</p>
+{% endif %}
+<!-- <div class="pagination">
+
+    <span class="@step-links">
+        {% if users.has_previous %}
+            <a href="?page=1&q={{q}}">&laquo; first </a>
+            <a href="?page={{ users.previous_page_number}}&q={{q}}">previous</a>
+        {% endif %}
+        <span class="current">
+            Page {{ users.number }} of {{ users.paginator.num_pages }}.
+        </span>
+        {% if users.has_next %}
+            <a href="?page={{ users.next_page_number }}&q={{q}}">next</a>
+            <a href="?page={{ users.paginator.num_pages }}&q={{q}}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div> -->
+
+    <br />
+
+      <ul class="pagination">
+
+      {% if users.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page=1&q={{q}}"><i class="fas fa-angle-double-left"></i></a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ users.previous_page_number}}&q={{q}}"><i class="fas fa-angle-left"></i></a></li>
+          {% else %}
+
+        {% endif %}
+          <li class="page-item active">
+      <span class="page-link">
+        page {{ users.number }} of {{ users.paginator.num_pages }}
+      </span>
+    </li>
+
+      {% if users.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ users.next_page_number }}&q={{q}}"><i class="fas fa-angle-right"></i></a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ users.paginator.num_pages }}&q={{q}}"><i class="fas fa-angle-double-right"></i></a></li>
+        {% endif %}
+  </ul>
+
+{% endblock %}

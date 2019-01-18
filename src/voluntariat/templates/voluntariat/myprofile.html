@@ -1,5 +1,9 @@
 {% extends "voluntariat/base_generic.html" %}
 {% block content %}
+
+        <meta http-equiv="REFRESH" content="0;url={% url 'voluntariat:userprofile' request.user.id %}">
+
+
     <p><h1>Detalii utilizator</h1></p>
 
     <h1>This page is supposed to be removed :)</h1>
