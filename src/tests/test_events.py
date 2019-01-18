@@ -30,6 +30,7 @@ def event_instance(user_instance):
     uploaded = SimpleUploadedFile('small.gif', small_gif, content_type='image/gif')
     date = datetime.now()
 
+
     return Event.objects.create(name='Denis', picture=uploaded, location='Cluj', description='Cluj',\
                                 benefits='Cluj', start_date=date, end_date=date, organizer=user_instance)
 

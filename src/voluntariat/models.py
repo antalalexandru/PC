@@ -12,6 +12,7 @@ class Event(models.Model):
     location = models.CharField(max_length=100)
     description = models.TextField()
     benefits = models.TextField()
+    google_doc_url = models.URLField(null=True)
 
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()

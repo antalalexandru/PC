@@ -8,6 +8,9 @@
     <p><strong>Benefits:</strong> {{ event.benefits }}</p>
     <p><strong>Start Date:</strong> {{ event.start_date }}</p>
     <p><strong>End date:</strong> {{ event.end_date }}</p>
+    {% if event.google_doc_url %}
+        <p><a href="{{ event.google_doc_url }}">Te rog completeaza acest formular</a></p>
+    {% endif %}
     {% if event.organizer == request.user %}
         <a href="{% url 'voluntariat:event-delete' event.id %}">Sterge</a>
         <a href="{% url 'voluntariat:event-update' event.id %}">Editeaza</a>
@@ -19,22 +22,23 @@
     {% endif %}
 
 
-    <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}" rel="noopener noreferrer" target="_blank">Chat</a>
+    <a href="{% url 'voluntariat:chat' %}?userid={{ request.user.sendbird_user_id }}&nickname={{ request.user.username }}"
+       rel="noopener noreferrer" target="_blank">Chat</a>
 
     {% if request.can_attend == 1 %}
         <a href="{% url 'voluntariat:event-attend' event.id %}">Attend</a>
     {% endif %}
     {% if request.can_attend == 0 %}
-        <a  href="{% url 'voluntariat:event-unattend' event.id %}">Unattend</a>
+        <a href="{% url 'voluntariat:event-unattend' event.id %}">Unattend</a>
     {% endif %}
-     {% if request.can_attend == 2 %}
-       <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
+    {% if request.can_attend == 2 %}
+        <p>Pentru a participa la acest eveniment va rugam sa va logati</p>
     {% endif %}
-      {% if request.can_attend == 3 %}
-       <p>Sunteti organizatorul acestui eveniment</p>
+    {% if request.can_attend == 3 %}
+        <p>Sunteti organizatorul acestui eveniment</p>
     {% endif %}
     {% if request.can_attend == 4 %}
-       <p>La acest eveniment nu se mai fac inscrieri</p>
+        <p>La acest eveniment nu se mai fac inscrieri</p>
     {% endif %}
 
 {% endblock %}

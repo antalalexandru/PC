@@ -69,6 +69,8 @@ class EventDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
+        event = self.object
+        print(event.google_doc_url)
         if self.request.user.id is None and models.Event.objects.filter(id=self.kwargs['pk'])[
             0].can_add_participants is True:
             self.request.can_attend = 2
@@ -98,7 +100,9 @@ def eventCreateView(request):
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
             event = form.save(commit=False)
+            event.google_doc_url = form.cleaned_data.get("link")
             event.organizer = request.user
+
 
             # save Sendbird group url
             event.send_bird_channel_url = str(uuid.uuid4())
@@ -145,7 +149,10 @@ def event_update_view(request, pk):
         form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
             event = form.save(commit=False)
+            event.google_doc_url = form.cleaned_data.get("link")
             event.organizer = request.user
+
+
             event.save()
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
     else:
