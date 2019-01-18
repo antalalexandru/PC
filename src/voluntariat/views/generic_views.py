@@ -1,6 +1,7 @@
 import json
 import uuid
 
+from django.core.mail import EmailMessage
 import requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -13,7 +14,7 @@ from voluntariat import models
 from django.urls import reverse
 from django.views import generic
 from django.db.models import Q
-from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm, FeedbackForm
+from ..forms import EventForm, LoginForm, SignUpForm, UserForm, ChangePasswordForm, FeedbackForm, SendInfoForm
 from ..models import Event, User, Participantion
 from django.db.models import Count
 
@@ -23,7 +24,7 @@ from django.db.models import Q
 
 class EventListView(generic.ListView):
     model = Event
-    paginate_by = 10
+    # paginate_by = 10
 
     def get_queryset(self):
         query = self.request.GET.get("search", None)
@@ -140,6 +141,7 @@ def eventCreateView(request):
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
             event = form.save(commit=False)
+            event.google_doc_url = form.cleaned_data.get("link")
             event.organizer = request.user
 
             # save Sendbird group url
@@ -186,6 +188,7 @@ def event_update_view(request, pk):
         form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
             event = form.save(commit=False)
+            event.google_doc_url = form.cleaned_data.get("link")
             event.organizer = request.user
             event.save()
             return redirect(reverse('voluntariat:event-detail', kwargs={'pk': event.pk}))
@@ -400,6 +403,7 @@ def volunteer_send_email(request, pk):
         return redirect(reverse('voluntariat:volunteers'))
     context = {"user": obj}
     return render(request, "voluntariat/send_em.html", context)
+
 @csrf_exempt
 def update_rate(request):
     if request.method == 'POST':
@@ -433,3 +437,19 @@ def block_user(request, id):
         return redirect(reverse('voluntariat:dashboard'))
 
     return render(request, "voluntariat/block.html", {'participari': participari})
+
+def event_send_details(request, pk):
+    if request.method == "POST":
+        form = SendInfoForm(request.POST)
+        #if form.is_valid():
+        emails = list(Event.objects.get(pk=pk).participantion_set.filter().prefetch_related(
+            "voluntar").values_list("voluntar__email", flat=True))
+        message=str(form.data.get('message'))
+        msg = "Organizatorul evenimentului " + Event.objects.get(pk=pk).name + " doreste sa va comunice urmatoarele: \n"
+        email = EmailMessage('Informatii despre evenimentul la care participi', msg + message,to=emails)
+        email.send()
+
+        return redirect('voluntariat:dashboard')
+
+    # return redirect(reverse('voluntariat:dashboard'))
+    return render(request, 'voluntariat/send_info.html', {'form': SendInfoForm()})

@@ -17,9 +17,10 @@ class LoginForm(forms.Form):
 
 
 class EventForm(forms.ModelForm):
+    link = forms.URLField(label="link", required=False)
     class Meta:
         model = Event
-        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date', 'requested_donation')
+        fields = ('name', 'picture', 'location', 'description', 'benefits', 'start_date', 'end_date', 'requested_donation', 'link')
         widgets = {
             'start_date': DateTimePickerInput(format='%Y-%m-%d %H:%M'),
             'end_date': DateTimePickerInput(format='%Y-%m-%d %H:%M'),
@@ -82,3 +83,5 @@ class ChangePasswordForm(forms.Form):
 class FeedbackForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea)
 
+class SendInfoForm(forms.Form):
+    message = forms.CharField(label='message', max_length=500, widget=forms.Textarea)
