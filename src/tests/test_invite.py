@@ -10,14 +10,15 @@ def fake_send(self, fail_silently=False):
 
 
 def test_see_users(client, db):
-    User.objects.create_user(username='Ana', password='password')
-    User.objects.create_user(username='username2', password='password2')
-    User.objects.create_user(username='username3', password='password3')
+    User.objects.create_user(username='Ana', password='password', email="ex1@y.com")
+    User.objects.create_user(username='username2', password='password2', email="ex2@y.com")
+    User.objects.create_user(username='username3', password='password3', email="ex3@y.com")
     resp = client.get(f'{reverse("voluntariat:volunteers")}?q=Ana')
     assert len(resp.context['users'].object_list) == 1
 
     resp = client.get(f'{reverse("voluntariat:volunteers")}')
-    assert len(resp.context['users'].object_list) == 3
+    assert len(resp.context['users'].object_list) == 2
+
 
 
 def test_send_email(client, db):
