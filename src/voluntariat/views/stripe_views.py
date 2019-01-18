@@ -11,8 +11,10 @@ from django.conf import settings
 
 from ..models import User
 
+stripe.api_key = settings.API_TOKEN_STRIPE
 
-def stripe(request):
+
+def stripe_connect(request):
     # Set up your OAuth flow parameters
     stripe_connect_service = OAuth2Service(
         name='stripe',
@@ -40,9 +42,24 @@ def stripe(request):
     print(stripe_payload)
 
     # They return four parameters.  We only care about the 'access_token' right now
-    connect_access_token = stripe_payload['access_token']
+    connect_access_token = stripe_payload['stripe_user_id']
 
     request.user.stripe_client_id = connect_access_token
     request.user.save()
 
     return render(request, 'voluntariat/stripe/stripe.html')
+
+
+def stripe_checkout(request):
+    if request.method == "POST":
+        token = request.POST.get("stripeToken")
+
+    stripe.Charge.create(
+        amount=999,
+        currency="ron",
+        source=token,
+        description="Ai donat 10 lei",
+        stripe_account="acct_1Dr3OXJxau59OLf7",
+    )
+
+    return render(request, 'voluntariat/stripe/checkout.html')
